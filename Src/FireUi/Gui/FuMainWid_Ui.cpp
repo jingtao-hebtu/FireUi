@@ -10,8 +10,49 @@ Copyright(C), tao.jing All rights reserved
 **************************************************************************/
 #include "FuMainWid_Ui.h"
 
+#include <QLabel>
+#include <QObject>
+#include <QStackedWidget>
+#include <QVBoxLayout>
+
 
 void TF::FuMainWid_Ui::setupUi(QWidget *wid) {
     mWid = wid;
-    mWid->resize(1000, 600);
+    mWid->resize(1200, 720);
+
+    mLayout = new QHBoxLayout(mWid);
+    mLayout->setContentsMargins(0, 0, 0, 0);
+    mLayout->setSpacing(0);
+
+    mSideTabBar = new FuSideTabBar(mWid);
+    mSideTabBar->setFixedWidth(86);
+
+    mStackedWidget = new QStackedWidget(mWid);
+
+    auto createPage = [](const QString &title, const QString &desc) {
+        auto *page = new QWidget();
+        auto *layout = new QVBoxLayout(page);
+        layout->setAlignment(Qt::AlignCenter);
+
+        auto *titleLabel = new QLabel(title, page);
+        titleLabel->setAlignment(Qt::AlignCenter);
+        titleLabel->setStyleSheet("font-size: 26px; font-weight: 600;");
+
+        auto *descLabel = new QLabel(desc, page);
+        descLabel->setAlignment(Qt::AlignCenter);
+        descLabel->setStyleSheet("color: #666; font-size: 14px;");
+
+        layout->addWidget(titleLabel);
+        layout->addWidget(descLabel);
+        return page;
+    };
+
+    mStackedWidget->addWidget(createPage(QObject::tr("概览"), QObject::tr("系统实时状态概览")));
+    mStackedWidget->addWidget(createPage(QObject::tr("采集"), QObject::tr("双光火焰采集控制")));
+    mStackedWidget->addWidget(createPage(QObject::tr("记录"), QObject::tr("历史记录与回放")));
+    mStackedWidget->addWidget(createPage(QObject::tr("状态"), QObject::tr("当前运行状态详情")));
+
+    mLayout->addWidget(mSideTabBar);
+    mLayout->addWidget(mStackedWidget);
+    mLayout->setStretch(1, 1);
 }

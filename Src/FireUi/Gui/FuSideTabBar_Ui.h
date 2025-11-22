@@ -3,43 +3,31 @@
 Copyright(C), tao.jing All rights reserved
 
  **************************************************************************
-   File   : FuMainWid_Ui.h
-   Author : tao.jing
+   File   : FuSideTabBar_Ui.h
+   Author : OpenAI ChatGPT
    Date   : 2025/11/22
    Brief  :
 **************************************************************************/
-#ifndef FIREUI_FUMAINWID_UI_H
-#define FIREUI_FUMAINWID_UI_H
+#ifndef FIREUI_FUSIDETABBAR_UI_H
+#define FIREUI_FUSIDETABBAR_UI_H
 
 #include <QWidget>
-#include <QHBoxLayout>
-#include <QStackedWidget>
-
-#include "FuSideTabBar.h"
-
+#include <QToolButton>
+#include <QVBoxLayout>
+#include <QList>
 
 namespace TF {
 
-    class FuMainWid_Ui {
-
-        friend class TVideoViewer;
-
+    class FuSideTabBar_Ui {
+        friend class FuSideTabBar;
     public:
-
         void setupUi(QWidget* wid);
 
     protected:
-
         QWidget *mWid {nullptr};
-        QHBoxLayout *mLayout {nullptr};
-        FuSideTabBar *mSideTabBar {nullptr};
-        QStackedWidget *mStackedWidget {nullptr};
-
+        QVBoxLayout *mLayout {nullptr};
+        QList<QToolButton*> mButtons {};
     };
+}
 
-};
-
-
-
-
-#endif //EPVIDEOVIEWER_FUMAINWID_UI_H
+#endif //FIREUI_FUSIDETABBAR_UI_H
