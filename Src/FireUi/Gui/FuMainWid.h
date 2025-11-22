@@ -29,6 +29,7 @@ namespace TF {
 
     private:
         void setupUi();
+        void setupConnections();
 
     private:
         FuMainWid_Ui *mUi;

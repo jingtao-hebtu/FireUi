@@ -14,6 +14,7 @@ Copyright(C), tao.jing All rights reserved
 
 TF::FuMainWid::FuMainWid(QWidget* parent) : QWidget(parent) {
     setupUi();
+    setupConnections();
 }
 
 TF::FuMainWid::~FuMainWid() {
@@ -23,4 +24,18 @@ TF::FuMainWid::~FuMainWid() {
 void TF::FuMainWid::setupUi() {
     mUi = new FuMainWid_Ui();
     mUi->setupUi(this);
+}
+
+void TF::FuMainWid::setupConnections() {
+    if (mUi == nullptr) {
+        return;
+    }
+
+    connect(mUi->mSideTabBar, &FuSideTabBar::tabSelected, this, [this](int index) {
+        if (mUi->mStackedWidget != nullptr) {
+            mUi->mStackedWidget->setCurrentIndex(index);
+        }
+    });
+
+    mUi->mSideTabBar->setCurrentIndex(0);
 }
