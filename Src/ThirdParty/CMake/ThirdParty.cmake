@@ -10,7 +10,6 @@ ENDIF ()
 
 
 set(QT_LIB_PATH ${THIRD_PARTY_PATH}/Qt)
-set(T_ZMQ_LIB_PATH ${THIRD_PARTY_PATH}/Zmq)
 
 
 include(${QT_LIB_PATH}/CMake/Qt.cmake)
