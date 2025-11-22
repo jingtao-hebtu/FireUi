@@ -26,6 +26,7 @@ void TF::FuMainWid_Ui::setupUi(QWidget *wid) {
     mLayout->setSpacing(0);
 
     mSideTabBar = new FuSideTabBar(mWid);
+    mSideTabBar->setObjectName("SideTabBar");
     mSideTabBar->setFixedWidth(86);
 
     mStackedWidget = new QStackedWidget(mWid);

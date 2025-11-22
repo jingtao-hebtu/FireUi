@@ -43,7 +43,7 @@ void TF::FuMainWid::setupConnections() {
 }
 
 void TF::FuMainWid::initStyle() {
-    QFile win_style_file(QString(":/qss/wid/FuMainWid.css"));
+    QFile win_style_file(QString(":/qss/FuMainWid.css"));
     if (win_style_file.open(QFile::ReadOnly)) {
         QString styleStr = win_style_file.readAll();
         setStyleSheet(styleStr);
