@@ -2,10 +2,16 @@
 # *
 # *
 
-set(Qt6_Version "6.9.1")
+if(UNIX)
+    set(Qt6_Version "6.9.3")
+    set(Qt6_Base_DIR "/home/tao/software/Qt/${Qt6_Version}/gcc_64")
+    set(Qt6_DIR "/home/tao/software/Qt/${Qt6_Version}/gcc_64")
+elseif(WIN32)
+    set(Qt6_Version "6.9.1")
+    set(Qt6_Base_DIR "D:/Software/Qt/${Qt6_Version}/msvc2022_64")
+    set(Qt6_DIR "D:/Software/Qt/${Qt6_Version}/msvc2022_64")
+endif()
 
-set(Qt6_Base_DIR "D:/Software/Qt/${Qt6_Version}/msvc2022_64")
-set(Qt6_DIR "D:/Software/Qt/${Qt6_Version}/msvc2022_64")
 set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${Qt6_DIR};")
 set(ENV{PATH} "${Qt6_DIR}/bin;$ENV{PATH}")
 
