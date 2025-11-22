@@ -1,0 +1,16 @@
+# *  @Copyright (c) tao.jing
+# *
+# *
+
+IF (NOT THIRD_PARTY_PATH)
+    set(THIRD_PARTY_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+ELSE ()
+    set(THIRD_PARTY_PATH ${THIRD_PARTY_PATH})
+ENDIF ()
+
+
+set(QT_LIB_PATH ${THIRD_PARTY_PATH}/Qt)
+set(T_ZMQ_LIB_PATH ${THIRD_PARTY_PATH}/Zmq)
+
+
+include(${QT_LIB_PATH}/CMake/Qt.cmake)
