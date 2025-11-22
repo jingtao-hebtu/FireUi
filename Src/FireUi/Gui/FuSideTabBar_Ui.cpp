@@ -13,7 +13,6 @@ Copyright(C), tao.jing All rights reserved
 #include <QObject>
 #include <QIcon>
 #include <QSize>
-#include <QStyle>
 
 namespace TF {
 
@@ -23,29 +22,38 @@ namespace TF {
             button->setCheckable(true);
             button->setAutoExclusive(true);
             button->setIcon(icon);
-            button->setIconSize(QSize(32, 32));
+            button->setIconSize(QSize(30, 30));
             button->setToolTip(tooltip);
-            button->setFixedSize(64, 64);
+            button->setFixedSize(72, 68);
             button->setToolButtonStyle(Qt::ToolButtonIconOnly);
-            button->setStyleSheet("QToolButton { border: none; background: transparent; border-radius: 8px; }"
-                                  "QToolButton:hover { background-color: rgba(45, 137, 239, 30%); }"
-                                  "QToolButton:checked { background-color: #2d89ef; color: white; }");
+            button->setProperty("sideTab", true);
             return button;
         }
     }
 
     void FuSideTabBar_Ui::setupUi(QWidget *wid) {
         mWid = wid;
+        mWid->setObjectName("SideTabBar");
 
         mLayout = new QVBoxLayout(mWid);
         mLayout->setContentsMargins(8, 12, 8, 12);
         mLayout->setSpacing(12);
 
-        auto *style = mWid->style();
-        mButtons.append(createTabButton(mWid, style->standardIcon(QStyle::SP_ComputerIcon), QObject::tr("概览")));
-        mButtons.append(createTabButton(mWid, style->standardIcon(QStyle::SP_DesktopIcon), QObject::tr("采集")));
-        mButtons.append(createTabButton(mWid, style->standardIcon(QStyle::SP_FileDialogDetailedView), QObject::tr("记录")));
-        mButtons.append(createTabButton(mWid, style->standardIcon(QStyle::SP_MessageBoxInformation), QObject::tr("状态")));
+        struct TabInfo {
+            QString iconPath;
+            QString tooltip;
+        };
+
+        const QVector<TabInfo> tabs = {
+                {QStringLiteral(":/icons/nav-dashboard.svg"), QObject::tr("概览")},
+                {QStringLiteral(":/icons/nav-control.svg"), QObject::tr("采集")},
+                {QStringLiteral(":/icons/nav-logs.svg"), QObject::tr("记录")},
+                {QStringLiteral(":/icons/nav-status.svg"), QObject::tr("状态")},
+        };
+
+        for (const auto &tab : tabs) {
+            mButtons.append(createTabButton(mWid, QIcon(tab.iconPath), tab.tooltip));
+        }
 
         for (auto *button : mButtons) {
             mLayout->addWidget(button);
