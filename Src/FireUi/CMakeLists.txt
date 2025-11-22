@@ -20,6 +20,8 @@ endforeach ()
 
 list(REMOVE_DUPLICATES INCLUDE_DIRS)
 
+set(FU_SRC_FILES "${FU_SRC_FILES};${FU_SRC_DIR}/Res/rc.qrc;")
+
 
 add_executable(${PROJECT_NAME} WIN32
         ${FU_SRC_FILES}

@@ -10,11 +10,13 @@ Copyright(C), tao.jing All rights reserved
 **************************************************************************/
 #include "FuMainWid.h"
 #include "FuMainWid_Ui.h"
+#include <QFile>
 
 
 TF::FuMainWid::FuMainWid(QWidget* parent) : QWidget(parent) {
     setupUi();
     setupConnections();
+    initStyle();
 }
 
 TF::FuMainWid::~FuMainWid() {
@@ -38,4 +40,13 @@ void TF::FuMainWid::setupConnections() {
     });
 
     mUi->mSideTabBar->setCurrentIndex(0);
+}
+
+void TF::FuMainWid::initStyle() {
+    QFile win_style_file(QString(":/qss/wid/FuMainWid.css"));
+    if (win_style_file.open(QFile::ReadOnly)) {
+        QString styleStr = win_style_file.readAll();
+        setStyleSheet(styleStr);
+        win_style_file.close();
+    }
 }

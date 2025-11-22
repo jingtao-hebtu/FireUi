@@ -31,6 +31,8 @@ namespace TF {
         void setupUi();
         void setupConnections();
 
+        void initStyle();
+
     private:
         FuMainWid_Ui *mUi;
 

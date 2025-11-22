@@ -22,7 +22,7 @@ namespace TF {
 
     class FuMainWid_Ui {
 
-        friend class TVideoViewer;
+        friend class FuMainWid;
 
     public:
 
