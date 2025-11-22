@@ -20,6 +20,7 @@ endforeach ()
 
 list(REMOVE_DUPLICATES INCLUDE_DIRS)
 
+set(FU_SRC_FILES "${FU_SRC_FILES};${T_FFMPEG_SRC};${T_VIDEO_SYSTEM_SRC}")
 set(FU_SRC_FILES "${FU_SRC_FILES};${FU_SRC_DIR}/Res/rc.qrc;")
 
 
@@ -31,6 +32,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 
 target_link_libraries(${PROJECT_NAME}
         ${QT_LIBS}
+        ${T_FFMPEG_LIBS}
 )
 
 

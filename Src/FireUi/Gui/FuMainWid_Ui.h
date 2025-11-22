@@ -20,6 +20,8 @@ Copyright(C), tao.jing All rights reserved
 
 namespace TF {
 
+    class FuVideoPage;
+
     class FuMainWid_Ui {
 
         friend class FuMainWid;
@@ -34,6 +36,8 @@ namespace TF {
         QHBoxLayout *mLayout {nullptr};
         FuSideTabBar *mSideTabBar {nullptr};
         QStackedWidget *mStackedWidget {nullptr};
+
+        FuVideoPage *mVideoPage {nullptr};
 
     };
 

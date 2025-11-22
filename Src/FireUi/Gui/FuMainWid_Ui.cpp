@@ -9,6 +9,7 @@ Copyright(C), tao.jing All rights reserved
    Brief  :
 **************************************************************************/
 #include "FuMainWid_Ui.h"
+#include "FuVideoPage.h"
 
 #include <QLabel>
 #include <QObject>
@@ -48,7 +49,10 @@ void TF::FuMainWid_Ui::setupUi(QWidget *wid) {
         return page;
     };
 
-    mStackedWidget->addWidget(createPage(QObject::tr("概览"), QObject::tr("系统实时状态概览")));
+    mVideoPage = new FuVideoPage();
+    mVideoPage->setObjectName("VideoPage");
+    mStackedWidget->addWidget(mVideoPage);
+
     mStackedWidget->addWidget(createPage(QObject::tr("采集"), QObject::tr("双光火焰采集控制")));
     mStackedWidget->addWidget(createPage(QObject::tr("记录"), QObject::tr("历史记录与回放")));
     mStackedWidget->addWidget(createPage(QObject::tr("状态"), QObject::tr("当前运行状态详情")));
