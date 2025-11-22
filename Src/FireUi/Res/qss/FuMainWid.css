@@ -1,5 +1,54 @@
 #FuMainWid {
-    border-style: solid;
-    border-radius: 3px;
-    background-color: #242745;
+    border: 1px solid #121826;
+    border-radius: 6px;
+    background-color: #0f1320;
+    color: #c7cdd8;
+}
+
+#SideTabBar {
+    background-color: #0b101a;
+    border-right: 1px solid #121826;
+}
+
+QToolButton[sideTab="true"] {
+    border: none;
+    background: transparent;
+    border-radius: 14px;
+    padding: 12px 10px;
+    color: #9aa6ba;
+}
+
+QToolButton[sideTab="true"]::menu-indicator {
+    image: none;
+}
+
+QToolButton[sideTab="true"]:hover {
+    background-color: rgba(62, 123, 255, 0.12);
+    color: #c7d2e6;
+}
+
+QToolButton[sideTab="true"]:checked {
+    background-color: rgba(62, 123, 255, 0.18);
+    border-left: 4px solid #3b82f6;
+    padding-left: 6px;
+    color: #3b82f6;
+}
+
+QStackedWidget {
+    background-color: #11182a;
+    border: none;
+}
+
+QLabel {
+    color: #d7deea;
+}
+
+QLabel[title="true"] {
+    font-size: 26px;
+    font-weight: 600;
+}
+
+QLabel[description="true"] {
+    color: #8d98ac;
+    font-size: 14px;
 }

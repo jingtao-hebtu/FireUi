@@ -18,6 +18,7 @@ Copyright(C), tao.jing All rights reserved
 
 void TF::FuMainWid_Ui::setupUi(QWidget *wid) {
     mWid = wid;
+    mWid->setObjectName("FuMainWid");
     mWid->resize(1200, 720);
 
     mLayout = new QHBoxLayout(mWid);
@@ -36,11 +37,11 @@ void TF::FuMainWid_Ui::setupUi(QWidget *wid) {
 
         auto *titleLabel = new QLabel(title, page);
         titleLabel->setAlignment(Qt::AlignCenter);
-        titleLabel->setStyleSheet("font-size: 26px; font-weight: 600;");
+        titleLabel->setProperty("title", true);
 
         auto *descLabel = new QLabel(desc, page);
         descLabel->setAlignment(Qt::AlignCenter);
-        descLabel->setStyleSheet("color: #666; font-size: 14px;");
+        descLabel->setProperty("description", true);
 
         layout->addWidget(titleLabel);
         layout->addWidget(descLabel);
