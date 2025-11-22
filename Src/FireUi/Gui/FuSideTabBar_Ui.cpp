@@ -16,22 +16,51 @@ Copyright(C), tao.jing All rights reserved
 #include <QLabel>
 #include <QFrame>
 #include <QFont>
+#include <QEvent>
+#include <QtGlobal>
 
 namespace TF {
 
     namespace {
+        class AutoCenterIconFilter : public QObject {
+        public:
+            explicit AutoCenterIconFilter(QToolButton *button)
+                : QObject(button), mButton(button) {}
+
+            bool eventFilter(QObject *watched, QEvent *event) override {
+                if (watched == mButton && event->type() == QEvent::Resize) {
+                    updateIconSize();
+                }
+                return QObject::eventFilter(watched, event);
+            }
+
+            void updateIconSize() const {
+                if (mButton == nullptr) {
+                    return;
+                }
+                const int iconSide = qMax(16, static_cast<int>(qMin(mButton->width(), mButton->height()) * 0.55));
+                mButton->setIconSize(QSize(iconSide, iconSide));
+            }
+
+        private:
+            QToolButton *mButton;
+        };
+
         QToolButton* createTabButton(QWidget *parent, const QIcon &icon, const QString &tooltip) {
             auto *button = new QToolButton(parent);
             button->setCheckable(true);
             button->setAutoExclusive(true);
             button->setIcon(icon);
-            button->setIconSize(QSize(22, 22));
             button->setToolTip(tooltip);
             button->setText(tooltip);
             button->setFixedSize(60, 56);
             button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
             button->setFont(QFont("Noto Sans", 9, QFont::DemiBold));
             button->setProperty("sideTab", true);
+
+            auto *autoCenterFilter = new AutoCenterIconFilter(button);
+            button->installEventFilter(autoCenterFilter);
+            autoCenterFilter->updateIconSize();
             return button;
         }
     }
