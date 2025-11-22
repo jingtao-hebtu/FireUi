@@ -27,8 +27,7 @@ void TF::FuMainWid_Ui::setupUi(QWidget *wid) {
 
     mSideTabBar = new FuSideTabBar(mWid);
     mSideTabBar->setObjectName("SideTabBar");
-    mSideTabBar->setFixedWidth(110);
-
+    mSideTabBar->setFixedWidth(70);
     mStackedWidget = new QStackedWidget(mWid);
 
     auto createPage = [](const QString &title, const QString &desc) {

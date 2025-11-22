@@ -25,10 +25,10 @@ namespace TF {
             button->setCheckable(true);
             button->setAutoExclusive(true);
             button->setIcon(icon);
-            button->setIconSize(QSize(30, 30));
+            button->setIconSize(QSize(22, 22));
             button->setToolTip(tooltip);
             button->setText(tooltip);
-            button->setFixedSize(82, 88);
+            button->setFixedSize(60, 56);
             button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
             button->setFont(QFont("Noto Sans", 9, QFont::DemiBold));
             button->setProperty("sideTab", true);
@@ -41,16 +41,12 @@ namespace TF {
         mWid->setObjectName("SideTabBar");
 
         mLayout = new QVBoxLayout(mWid);
-        mLayout->setContentsMargins(10, 14, 10, 16);
+        mLayout->setContentsMargins(6, 8, 6, 8);
         mLayout->setSpacing(10);
 
-        auto *brandLabel = new QLabel(QObject::tr("FIRE SYSTEM"), mWid);
+        auto *brandLabel = new QLabel(QObject::tr("AI"), mWid);
         brandLabel->setAlignment(Qt::AlignCenter);
         brandLabel->setObjectName("SideBrand");
-
-        auto *subBrandLabel = new QLabel(QObject::tr("智能火焰感知"), mWid);
-        subBrandLabel->setAlignment(Qt::AlignCenter);
-        subBrandLabel->setObjectName("SideSubBrand");
 
         auto *divider = new QFrame(mWid);
         divider->setObjectName("SideDivider");
@@ -74,7 +70,6 @@ namespace TF {
         }
 
         mLayout->addWidget(brandLabel);
-        mLayout->addWidget(subBrandLabel);
         mLayout->addWidget(divider);
 
         for (auto *button : mButtons) {
