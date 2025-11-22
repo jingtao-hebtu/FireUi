@@ -13,6 +13,9 @@ Copyright(C), tao.jing All rights reserved
 #include <QObject>
 #include <QIcon>
 #include <QSize>
+#include <QLabel>
+#include <QFrame>
+#include <QFont>
 
 namespace TF {
 
@@ -24,8 +27,10 @@ namespace TF {
             button->setIcon(icon);
             button->setIconSize(QSize(30, 30));
             button->setToolTip(tooltip);
-            button->setFixedSize(72, 68);
-            button->setToolButtonStyle(Qt::ToolButtonIconOnly);
+            button->setText(tooltip);
+            button->setFixedSize(82, 88);
+            button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+            button->setFont(QFont("Noto Sans", 9, QFont::DemiBold));
             button->setProperty("sideTab", true);
             return button;
         }
@@ -36,8 +41,21 @@ namespace TF {
         mWid->setObjectName("SideTabBar");
 
         mLayout = new QVBoxLayout(mWid);
-        mLayout->setContentsMargins(8, 12, 8, 12);
-        mLayout->setSpacing(12);
+        mLayout->setContentsMargins(10, 14, 10, 16);
+        mLayout->setSpacing(10);
+
+        auto *brandLabel = new QLabel(QObject::tr("FIRE SYSTEM"), mWid);
+        brandLabel->setAlignment(Qt::AlignCenter);
+        brandLabel->setObjectName("SideBrand");
+
+        auto *subBrandLabel = new QLabel(QObject::tr("智能火焰感知"), mWid);
+        subBrandLabel->setAlignment(Qt::AlignCenter);
+        subBrandLabel->setObjectName("SideSubBrand");
+
+        auto *divider = new QFrame(mWid);
+        divider->setObjectName("SideDivider");
+        divider->setFrameShape(QFrame::HLine);
+        divider->setFrameShadow(QFrame::Plain);
 
         struct TabInfo {
             QString iconPath;
@@ -54,6 +72,10 @@ namespace TF {
         for (const auto &tab : tabs) {
             mButtons.append(createTabButton(mWid, QIcon(tab.iconPath), tab.tooltip));
         }
+
+        mLayout->addWidget(brandLabel);
+        mLayout->addWidget(subBrandLabel);
+        mLayout->addWidget(divider);
 
         for (auto *button : mButtons) {
             mLayout->addWidget(button);
