@@ -12,6 +12,7 @@ Copyright(C), tao.jing All rights reserved
 #define FIREUI_TFEXCEPTION_H
 
 #include "TLog.h"
+#include <cstdio>
 #include <cstdarg>
 #include <exception>
 #include <string>
@@ -31,11 +32,11 @@ throw TF::TFPromptException(TF::formatVarsToString(__VA_ARGS__)); \
 
 
 namespace TF {
-    static inline std::string formatVarsToString(const char* fmt...) {
+    static inline std::string formatVarsToString(const char* fmt, ...) {
         char buf[512] = {0};
         std::va_list args;
         va_start(args, fmt);
-        vsprintf_s(buf, fmt, args);
+        vsnprintf(buf, sizeof(buf), fmt, args);
         va_end(args);
         return buf;
     }
@@ -43,11 +44,18 @@ namespace TF {
     class TFException : public std::exception
     {
     public:
-        explicit TFException(const char* msg) : std::exception(msg) {
+        explicit TFException(const char* msg) : message_(msg) {
         }
 
-        explicit TFException(const std::string& msg) : std::exception(msg.c_str()) {
+        explicit TFException(const std::string& msg) : message_(msg) {
         }
+
+        [[nodiscard]] const char* what() const noexcept override {
+            return message_.c_str();
+        }
+
+    private:
+        std::string message_;
     };
 
     // Prompt exception information to user
