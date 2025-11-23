@@ -50,10 +50,10 @@ void TF::FuVideoPage_Ui::initCtrlArea() {
     mCtrlHLayout->setSpacing(12);
     mCtrlHLayout->setContentsMargins(10, 10, 10, 10);
 
-    mStreamToggleBtn = new TechToggleButton("启动拉流/显示", mWid);
+    mStreamToggleBtn = new TechToggleButton("主相机", mWid);
     mStreamToggleBtn->setObjectName("StartStopStream");
 
-    mAiToggleBtn = new TechToggleButton("视觉AI检测", mWid);
+    mAiToggleBtn = new TechToggleButton("AI检测", mWid);
     mAiToggleBtn->setObjectName("StartStopAi");
 
     mSaveToggleBtn = new TechToggleButton("保存视频", mWid);

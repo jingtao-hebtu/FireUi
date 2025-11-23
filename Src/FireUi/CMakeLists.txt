@@ -30,6 +30,11 @@ add_executable(${PROJECT_NAME}
 )
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 
+
+set(APP_ICON_RESOURCE "${FU_SRC_DIR}/Res/app_icon.rc")
+target_sources(${PROJECT_NAME} PRIVATE ${APP_ICON_RESOURCE})
+
+
 target_link_libraries(${PROJECT_NAME}
         ${QT_LIBS}
         ${T_FFMPEG_LIBS}
