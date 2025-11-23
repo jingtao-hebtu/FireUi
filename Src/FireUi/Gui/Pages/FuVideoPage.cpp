@@ -16,7 +16,7 @@ Copyright(C), tao.jing All rights reserved
 #include "deviceutil.h"
 #include "qthelper.h"
 #include "TConfig.h"
-#include <QPushButton>
+#include "FuVideoButtons.h"
 #include <iostream>
 
 
@@ -40,8 +40,6 @@ void TF::FuVideoPage::setupUI() {
 void TF::FuVideoPage::initActions() {
     connect(mUi->mStreamToggleBtn, &QPushButton::pressed,
         this, &FuVideoPage::onStreamButtonPressed);
-    connect(mUi->mStreamToggleBtn, &QPushButton::released,
-        this, &FuVideoPage::onStreamButtonReleased);
 }
 
 void TF::FuVideoPage::initVideo() {
@@ -82,14 +80,22 @@ void TF::FuVideoPage::onStreamButtonPressed() {
         return;
     }
 
-    std::string video_url = GET_STR_CONFIG("VideoURL");
-    mVideoSelect->open(video_url.c_str());
-}
-
-void TF::FuVideoPage::onStreamButtonReleased() {
-    if (!mVideoSelect) {
-        return;
+    // Start stream
+    if (!mUi->mStreamToggleBtn->isChecked()) {
+        if (!mRGBCamPlaying.load()) {
+            std::string video_url = GET_STR_CONFIG("VideoURL");
+            if (mVideoSelect->open(video_url.c_str())) {
+                mRGBCamPlaying.store(true);
+            } else {
+                mUi->mStreamToggleBtn->setChecked(false);
+            }
+        }
     }
-
-    mVideoSelect->stop();
+    // Stop stream
+    else if (mUi->mStreamToggleBtn->isChecked()) {
+        if (mRGBCamPlaying.load()) {
+            mVideoSelect->stop();
+            mRGBCamPlaying.store(false);
+        }
+    }
 }

@@ -97,12 +97,12 @@ public:
         }
 
         //设置常规颜色 普通状态+加深状态
-        void setColor(const QString &normalBgColor,
-                      const QString &normalTextColor,
+        void setColor(const QString &_normalBgColor,
+                      const QString &_normalTextColor,
                       const QString &darkBgColor,
                       const QString &darkTextColor) {
-            this->normalBgColor = normalBgColor;
-            this->normalTextColor = normalTextColor;
+            this->normalBgColor = _normalBgColor;
+            this->normalTextColor = _normalTextColor;
             this->hoverBgColor = darkBgColor;
             this->hoverTextColor = darkTextColor;
             this->pressedBgColor = darkBgColor;

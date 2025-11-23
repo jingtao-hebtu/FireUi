@@ -4,7 +4,7 @@ TechButtonBase {
     border: 1px solid #1f2f4a;
     border-radius: 14px;
     padding: 18px 24px;
-    font-size: 19px;
+    font-size: 39px;
     font-weight: 700;
     letter-spacing: 1px;
     qproperty-iconSize: 22px 22px;
@@ -24,6 +24,16 @@ TechButtonBase:pressed {
 }
 
 TechToggleButton {
+    color: #f4f8ff;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #0d182a, stop:1 #0a1220);
+    border: 1px solid #1f2f4a;
+    border-radius: 14px;
+    padding: 18px 24px;
+    font-size: 39px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    qproperty-iconSize: 22px 22px;
+
     background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #0f2036, stop:1 #0b1a2d);
     border: 1px solid #2c3f5e;
     outline: 1px solid rgba(91, 190, 255, 0.18);

@@ -12,7 +12,7 @@ Copyright(C), tao.jing All rights reserved
 #define FIREUI_FUVIDEOPAGE_H
 
 #include <QWidget>
-
+#include <atomic>
 
 class VideoBox;
 
@@ -37,8 +37,6 @@ namespace TF {
 
         void onStreamButtonPressed();
 
-        void onStreamButtonReleased();
-
     private:
         void setupUI();
 
@@ -57,6 +55,8 @@ namespace TF {
         QList<VideoWidget*> mVideoWids;
 
         static const int mVideoNum = 1;
+
+        std::atomic<bool> mRGBCamPlaying {false};
 
     };
 } // TF

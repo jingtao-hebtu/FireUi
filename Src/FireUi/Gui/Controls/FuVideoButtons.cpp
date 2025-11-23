@@ -3,18 +3,14 @@
 #include <QFile>
 #include <QSizePolicy>
 
-namespace
-{
-    QString loadVideoButtonQss()
-    {
+namespace {
+    QString loadVideoButtonQss() {
         static QString cached;
         static bool loaded = false;
 
-        if (!loaded)
-        {
+        if (!loaded) {
             QFile qssFile(":/qss/FuVideoButtons.css");
-            if (qssFile.open(QFile::ReadOnly | QFile::Text))
-            {
+            if (qssFile.open(QFile::ReadOnly | QFile::Text)) {
                 cached = QString::fromUtf8(qssFile.readAll());
             }
             loaded = true;
@@ -24,15 +20,13 @@ namespace
     }
 }
 
-QString TF::TechButtonBase::buttonStyleSheet()
-{
+QString TF::TechButtonBase::buttonStyleSheet() {
     return loadVideoButtonQss();
 }
 
-void TF::TechButtonBase::applySharedSetup()
-{
+void TF::TechButtonBase::applySharedSetup() {
     setCursor(Qt::PointingHandCursor);
-    setMinimumSize(180, 72);
+    setMinimumSize(160, 72);
     QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     sizePolicy.setHorizontalStretch(0);
     sizePolicy.setVerticalStretch(0);
@@ -41,19 +35,16 @@ void TF::TechButtonBase::applySharedSetup()
 }
 
 TF::TechButtonBase::TechButtonBase(const QString& text, QWidget* parent)
-    : QPushButton(text, parent)
-{
+    : QPushButton(text, parent) {
     applySharedSetup();
 }
 
 TF::TechToggleButton::TechToggleButton(const QString& text, QWidget* parent)
-    : TechButtonBase(text, parent)
-{
+    : TechButtonBase(text, parent) {
     setCheckable(true);
 }
 
 TF::TechActionButton::TechActionButton(const QString& text, QWidget* parent)
-    : TechButtonBase(text, parent)
-{
+    : TechButtonBase(text, parent) {
     setCheckable(false);
 }
