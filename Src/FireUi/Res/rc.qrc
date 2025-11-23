@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>qss/FuMainWid.css</file>
+        <file>qss/FuVideoButtons.css</file>
         <file>icons/nav-dashboard.svg</file>
         <file>icons/nav-control.svg</file>
         <file>icons/nav-logs.svg</file>
