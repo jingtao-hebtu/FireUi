@@ -37,6 +37,8 @@ namespace TF {
 
         void onStreamButtonPressed();
 
+        void onSaveButtonToggled(bool checked);
+
     private:
         void setupUI();
 
@@ -58,6 +60,7 @@ namespace TF {
 
         std::atomic<bool> mRGBCamPlaying {false};
 
+        std::atomic<bool> mRecording {false};
     };
 } // TF
 

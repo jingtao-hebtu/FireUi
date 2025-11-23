@@ -18,6 +18,8 @@ Copyright(C), tao.jing All rights reserved
 #include "TConfig.h"
 #include "FuVideoButtons.h"
 #include <iostream>
+#include <QDateTime>
+#include <QDir>
 
 
 
@@ -40,6 +42,9 @@ void TF::FuVideoPage::setupUI() {
 void TF::FuVideoPage::initActions() {
     connect(mUi->mStreamToggleBtn, &QPushButton::pressed,
         this, &FuVideoPage::onStreamButtonPressed);
+
+    connect(mUi->mSaveToggleBtn, &QPushButton::toggled,
+        this, &FuVideoPage::onSaveButtonToggled);
 }
 
 void TF::FuVideoPage::initVideo() {
@@ -96,6 +101,35 @@ void TF::FuVideoPage::onStreamButtonPressed() {
         if (mRGBCamPlaying.load()) {
             mVideoSelect->stop();
             mRGBCamPlaying.store(false);
+        }
+    }
+}
+
+void TF::FuVideoPage::onSaveButtonToggled(bool checked) {
+    if (!mVideoSelect) {
+        return;
+    }
+
+    if (checked) {
+        if (!mVideoSelect->getIsRunning()) {
+            mUi->mSaveToggleBtn->setChecked(false);
+            return;
+        }
+
+        QDir dir(QDir::currentPath());
+        QString videoDir = dir.filePath("videos");
+        if (!dir.exists("videos")) {
+            dir.mkpath("videos");
+        }
+
+        const QString timestamp = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
+        const QString filePath = QDir(videoDir).filePath(QString("%1.mp4").arg(timestamp));
+        mVideoSelect->recordStart(filePath);
+        mRecording.store(true);
+    } else {
+        if (mRecording.load()) {
+            mVideoSelect->recordStop();
+            mRecording.store(false);
         }
     }
 }
