@@ -16,7 +16,11 @@ Copyright(C), tao.jing All rights reserved
 class QWidget;
 class QVBoxLayout;
 class QGridLayout;
-class QPushButton;
+
+namespace TF {
+    class TechToggleButton;
+    class TechActionButton;
+}
 
 namespace TF {
     class FuVideoPage_Ui
@@ -36,7 +40,10 @@ namespace TF {
         QVBoxLayout* mMainVLayout{nullptr};
 
         QHBoxLayout* mCtrlHLayout{nullptr};
-        QPushButton* mStartVideoBtn{nullptr};
+        TechToggleButton* mStreamToggleBtn{nullptr};
+        TechToggleButton* mAiToggleBtn{nullptr};
+        TechToggleButton* mSaveToggleBtn{nullptr};
+        TechActionButton* mRefreshOnceBtn{nullptr};
 
         QWidget* mVideoAreaWid{nullptr};
         QGridLayout* mVideoGLayout{nullptr};

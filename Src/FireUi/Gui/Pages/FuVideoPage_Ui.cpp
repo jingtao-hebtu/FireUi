@@ -11,7 +11,8 @@ Copyright(C), tao.jing All rights reserved
 #include "FuVideoPage_Ui.h"
 #include <QWidget>
 #include <QVBoxLayout>
-#include <QPushButton>
+#include "Gui/Controls/FuVideoButtons.h"
+#include <QSpacerItem>
 
 
 void TF::FuVideoPage_Ui::setupUi(QWidget* wid) {
@@ -46,12 +47,26 @@ void TF::FuVideoPage_Ui::initVideoArea() {
 
 void TF::FuVideoPage_Ui::initCtrlArea() {
     mCtrlHLayout = new QHBoxLayout();
-    mCtrlHLayout->setSpacing(6);
+    mCtrlHLayout->setSpacing(12);
+    mCtrlHLayout->setContentsMargins(10, 10, 10, 10);
 
-    mStartVideoBtn = new QPushButton(mWid);
-    mStartVideoBtn->setObjectName("StartVideo");
-    mStartVideoBtn->setText("开始");
-    mCtrlHLayout->addWidget(mStartVideoBtn);
+    mStreamToggleBtn = new TechToggleButton("启动拉流/显示", mWid);
+    mStreamToggleBtn->setObjectName("StartStopStream");
+
+    mAiToggleBtn = new TechToggleButton("视觉AI检测", mWid);
+    mAiToggleBtn->setObjectName("StartStopAi");
+
+    mSaveToggleBtn = new TechToggleButton("保存视频", mWid);
+    mSaveToggleBtn->setObjectName("StartStopSave");
+
+    mRefreshOnceBtn = new TechActionButton("刷新显示", mWid);
+    mRefreshOnceBtn->setObjectName("RefreshOnce");
+
+    mCtrlHLayout->addWidget(mStreamToggleBtn);
+    mCtrlHLayout->addWidget(mAiToggleBtn);
+    mCtrlHLayout->addWidget(mSaveToggleBtn);
+    mCtrlHLayout->addWidget(mRefreshOnceBtn);
+    mCtrlHLayout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
     mMainVLayout->addLayout(mCtrlHLayout);
 }
