@@ -35,7 +35,9 @@ namespace TF {
     private slots:
         void onFileDrag(const QString &url);
 
-        void onStartVideoBtnClicked();
+        void onStreamButtonPressed();
+
+        void onStreamButtonReleased();
 
     private:
         void setupUI();
