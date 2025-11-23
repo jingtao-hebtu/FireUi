@@ -29,12 +29,10 @@ add_executable(${PROJECT_NAME} WIN32
 )
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 
-
 target_link_libraries(${PROJECT_NAME}
         ${QT_LIBS}
         ${T_FFMPEG_LIBS}
 )
-
 
 if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     set(DEBUG_SUFFIX)
