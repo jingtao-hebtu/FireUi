@@ -11,11 +11,11 @@ Copyright(C), tao.jing All rights reserved
 #include "FuVideoPage.h"
 #include "FuVideoPage_Ui.h"
 #include "devicetree.h"
-#include "deviceicon.h"
 #include "videobox.h"
 #include "videowidgetx.h"
 #include "deviceutil.h"
 #include "qthelper.h"
+#include "TConfig.h"
 #include <iostream>
 
 
@@ -69,10 +69,16 @@ void TF::FuVideoPage::initVideo() {
     mVideoBox->show_all();
 }
 
+void TF::FuVideoPage::onFileDrag(const QString& url) {
+    VideoWidget *videoWidget = (VideoWidget *) sender();
+    videoWidget->open(url);
+}
+
 void TF::FuVideoPage::onStartVideoBtnClicked() {
     if (!mVideoSelect) {
         return;
     }
 
-    mVideoSelect->open("E:\\Files\\videos\\temp\\downloads\\a.mp4");
+    std::string video_url = GET_STR_CONFIG("VideoURL");
+    mVideoSelect->open(video_url.c_str());
 }

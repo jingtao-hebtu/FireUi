@@ -32,7 +32,9 @@ namespace TF {
 
         ~FuVideoPage() final;
 
-    public slots:
+    private slots:
+        void onFileDrag(const QString &url);
+
         void onStartVideoBtnClicked();
 
     private:

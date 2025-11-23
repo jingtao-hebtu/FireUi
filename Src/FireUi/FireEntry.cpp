@@ -10,10 +10,13 @@
 **************************************************************************/
 #include <QApplication>
 #include "FuMainWid.h"
+#include "AppMonitor.h"
 
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
+
+    TF::AppMonitor::instance().initApp(argc, argv);
 
     TF::FuMainWid win;
     win.show();

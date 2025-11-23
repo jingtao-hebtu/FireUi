@@ -24,7 +24,8 @@ set(FU_SRC_FILES "${FU_SRC_FILES};${T_FFMPEG_SRC};${T_VIDEO_SYSTEM_SRC}")
 set(FU_SRC_FILES "${FU_SRC_FILES};${FU_SRC_DIR}/Res/rc.qrc;")
 
 
-add_executable(${PROJECT_NAME} WIN32
+add_executable(${PROJECT_NAME}
+        #WIN32
         ${FU_SRC_FILES}
 )
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
@@ -32,6 +33,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME}
         ${QT_LIBS}
         ${T_FFMPEG_LIBS}
+        ${T_UTIL_LIB}
 )
 
 if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
@@ -43,6 +45,11 @@ if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
         set(LINK_LIB_TYPE "Release")
         set(DEBUG_SUFFIX)
     endif ()
+    # TUtilLib
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${T_UTIL_LIB_PATH}/${T_UTIL_LIB}.dll"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>")
     # Qt
     set(QT_INSTALL_PATH "${Qt6_Base_DIR}")
     if (NOT EXISTS "${QT_INSTALL_PATH}/bin")
