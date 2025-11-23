@@ -16,6 +16,7 @@ Copyright(C), tao.jing All rights reserved
 #include "deviceutil.h"
 #include "qthelper.h"
 #include "TConfig.h"
+#include <QPushButton>
 #include <iostream>
 
 
@@ -37,8 +38,10 @@ void TF::FuVideoPage::setupUI() {
 }
 
 void TF::FuVideoPage::initActions() {
-    connect(mUi->mStartVideoBtn, SIGNAL(clicked()),
-        this, SLOT(onStartVideoBtnClicked()));
+    connect(mUi->mStreamToggleBtn, &QPushButton::pressed,
+        this, &FuVideoPage::onStreamButtonPressed);
+    connect(mUi->mStreamToggleBtn, &QPushButton::released,
+        this, &FuVideoPage::onStreamButtonReleased);
 }
 
 void TF::FuVideoPage::initVideo() {
@@ -74,11 +77,19 @@ void TF::FuVideoPage::onFileDrag(const QString& url) {
     videoWidget->open(url);
 }
 
-void TF::FuVideoPage::onStartVideoBtnClicked() {
+void TF::FuVideoPage::onStreamButtonPressed() {
     if (!mVideoSelect) {
         return;
     }
 
     std::string video_url = GET_STR_CONFIG("VideoURL");
     mVideoSelect->open(video_url.c_str());
+}
+
+void TF::FuVideoPage::onStreamButtonReleased() {
+    if (!mVideoSelect) {
+        return;
+    }
+
+    mVideoSelect->stop();
 }
