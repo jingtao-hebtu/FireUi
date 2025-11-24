@@ -8,6 +8,8 @@ ELSE ()
     set(T_VIDEO_SYSTEM_DIR ${T_VIDEO_SYSTEM_DIR})
 ENDIF ()
 
+add_definitions(-Dopenglx)
+
 
 file(GLOB_RECURSE T_VIDEO_SYSTEM_SRC "${T_VIDEO_SYSTEM_DIR}/*.cpp")
 

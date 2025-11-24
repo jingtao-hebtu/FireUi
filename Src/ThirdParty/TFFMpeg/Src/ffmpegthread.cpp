@@ -10,6 +10,8 @@
 
 #include "audioplayer.h"
 
+
+
 FFmpegThread::FFmpegThread(QObject *parent) : VideoThread(parent) {
     //执行初始化
     FFmpegHelper::initLib();

@@ -5,6 +5,7 @@
 #include "widgethelper.h"
 #include "urlhelper.h"
 
+
 VideoWidget::VideoWidget(QWidget *parent) : AbstractVideoWidget(parent) {
     videoWidth = 0;
     videoHeight = 0;
