@@ -10,6 +10,7 @@ Copyright(C), tao.jing All rights reserved
 **************************************************************************/
 #include "FuMainWid_Ui.h"
 #include "FuVideoPage.h"
+#include "FuSideTabBar.h"
 
 #include <QLabel>
 #include <QObject>
@@ -29,8 +30,16 @@ void TF::FuMainWid_Ui::setupUi(QWidget *wid) {
     mSideTabBar = new FuSideTabBar(mWid);
     mSideTabBar->setObjectName("SideTabBar");
     mSideTabBar->setFixedWidth(70);
-    mStackedWidget = new QStackedWidget(mWid);
 
+
+    mVideoPage = new FuVideoPage(mStackedWidget);
+    mVideoPage->setObjectName("VideoPage");
+
+    /*
+    // OpenGL模式下
+    // 注释这段后, mLayout添加mVideoPage, 就可以正常显示视频流
+    // 不注释这段，mLayout添加mStackedWidget, 就无法显示视频流
+    mStackedWidget = new QStackedWidget(mWid);
     auto createPage = [](const QString &title, const QString &desc) {
         auto *page = new QWidget();
         auto *layout = new QVBoxLayout(page);
@@ -49,15 +58,12 @@ void TF::FuMainWid_Ui::setupUi(QWidget *wid) {
         return page;
     };
 
-    mVideoPage = new FuVideoPage();
-    mVideoPage->setObjectName("VideoPage");
     mStackedWidget->addWidget(mVideoPage);
-
     mStackedWidget->addWidget(createPage(QObject::tr("采集"), QObject::tr("双光火焰采集控制")));
     mStackedWidget->addWidget(createPage(QObject::tr("记录"), QObject::tr("历史记录与回放")));
-    mStackedWidget->addWidget(createPage(QObject::tr("状态"), QObject::tr("当前运行状态详情")));
+    mStackedWidget->addWidget(createPage(QObject::tr("状态"), QObject::tr("当前运行状态详情")));*/
 
     mLayout->addWidget(mSideTabBar);
-    mLayout->addWidget(mStackedWidget);
+    mLayout->addWidget(mVideoPage);
     mLayout->setStretch(1, 1);
 }

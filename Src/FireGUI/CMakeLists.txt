@@ -2,40 +2,42 @@
 # *
 # *
 cmake_minimum_required(VERSION 3.26)
-project(FireUi)
+project(FireGui)
 
+
+set(TARGET_APP_NAME FireGui)
 
 # Third Party
 include(${THIRD_PARTY_PATH}/CMake/ThirdParty.cmake)
 
 
 # Set sources and headers
-file(GLOB_RECURSE FU_SRC_FILES "${FU_SRC_DIR}/*.cpp")
+file(GLOB_RECURSE FIRE_GUI_SRC_FILES "${FIRE_GUI_SRC_DIR}/*.cpp")
 
 set(INCLUDE_DIRS "")
-foreach (FILE_PATH ${FU_SRC_FILES})
+foreach (FILE_PATH ${FIRE_GUI_SRC_FILES})
     get_filename_component(DIR_PATH ${FILE_PATH} PATH)
     list(APPEND INCLUDE_DIRS ${DIR_PATH})
 endforeach ()
 
 list(REMOVE_DUPLICATES INCLUDE_DIRS)
 
-set(FU_SRC_FILES "${FU_SRC_FILES};${T_FFMPEG_SRC};${T_VIDEO_SYSTEM_SRC}")
-set(FU_SRC_FILES "${FU_SRC_FILES};${FU_SRC_DIR}/Res/rc.qrc;")
+set(FIRE_GUI_SRC_FILES "${FIRE_GUI_SRC_FILES};${T_FFMPEG_SRC};${T_VIDEO_SYSTEM_SRC}")
+set(FIRE_GUI_SRC_FILES "${FIRE_GUI_SRC_FILES};${FIRE_GUI_SRC_DIR}/Res/rc.qrc;")
 
 
-add_executable(${PROJECT_NAME}
+add_executable(${TARGET_APP_NAME}
         #WIN32
-        ${FU_SRC_FILES}
+        ${FIRE_GUI_SRC_FILES}
 )
-target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
+target_include_directories(${TARGET_APP_NAME} PRIVATE ${INCLUDE_DIRS})
 
 
-set(APP_ICON_RESOURCE "${FU_SRC_DIR}/Res/app_icon.rc")
+set(APP_ICON_RESOURCE "${FIRE_GUI_SRC_DIR}/Res/app_icon.rc")
 target_sources(${PROJECT_NAME} PRIVATE ${APP_ICON_RESOURCE})
 
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${TARGET_APP_NAME}
         ${QT_LIBS}
         ${T_FFMPEG_LIBS}
         ${T_UTIL_LIB}
@@ -64,37 +66,37 @@ if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
         endif ()
     endif ()
     if (EXISTS "${QT_INSTALL_PATH}/plugins/platforms/qwindows${DEBUG_SUFFIX}.dll")
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        add_custom_command(TARGET ${TARGET_APP_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E make_directory
-                "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/platforms/")
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                "$<TARGET_FILE_DIR:${TARGET_APP_NAME}>/plugins/platforms/")
+        add_custom_command(TARGET ${TARGET_APP_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${QT_INSTALL_PATH}/plugins/platforms/qwindows${DEBUG_SUFFIX}.dll"
-                "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/platforms/")
+                "$<TARGET_FILE_DIR:${TARGET_APP_NAME}>/plugins/platforms/")
     endif ()
     if (EXISTS "${QT_INSTALL_PATH}/plugins/iconengines/qsvgicon${DEBUG_SUFFIX}.dll")
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        add_custom_command(TARGET ${TARGET_APP_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E make_directory
-                "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/iconengines/")
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                "$<TARGET_FILE_DIR:${TARGET_APP_NAME}>/plugins/iconengines/")
+        add_custom_command(TARGET ${TARGET_APP_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${QT_INSTALL_PATH}/plugins/iconengines/qsvgicon${DEBUG_SUFFIX}.dll"
-                "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/iconengines/")
+                "$<TARGET_FILE_DIR:${TARGET_APP_NAME}>/plugins/iconengines/")
     endif ()
     if (EXISTS "${QT_INSTALL_PATH}/plugins/sqldrivers/qsqlite${DEBUG_SUFFIX}.dll")
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        add_custom_command(TARGET ${TARGET_APP_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E make_directory
-                "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/sqldrivers/")
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                "$<TARGET_FILE_DIR:${TARGET_APP_NAME}>/plugins/sqldrivers/")
+        add_custom_command(TARGET ${TARGET_APP_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${QT_INSTALL_PATH}/plugins/sqldrivers/qsqlite${DEBUG_SUFFIX}.dll"
-                "$<TARGET_FILE_DIR:${PROJECT_NAME}>/plugins/sqldrivers/")
+                "$<TARGET_FILE_DIR:${TARGET_APP_NAME}>/plugins/sqldrivers/")
     endif ()
     foreach (QT_LIB ${QT_LIBS})
         string(REPLACE "Qt::" "" QT_LIB_NAME ${QT_LIB})
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        add_custom_command(TARGET ${TARGET_APP_NAME} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${QT_INSTALL_PATH}/bin/Qt6${QT_LIB_NAME}${DEBUG_SUFFIX}.dll"
-                "$<TARGET_FILE_DIR:${PROJECT_NAME}>")
+                "$<TARGET_FILE_DIR:${TARGET_APP_NAME}>")
     endforeach (QT_LIB)
 endif ()

@@ -9,6 +9,7 @@ Copyright(C), tao.jing All rights reserved
    Brief  :
 **************************************************************************/
 #include "FuVideoPage_Ui.h"
+#include "videowidgetx.h"
 #include <QWidget>
 #include <QVBoxLayout>
 #include "Gui/Controls/FuVideoButtons.h"
@@ -29,20 +30,11 @@ void TF::FuVideoPage_Ui::setupUi(QWidget* wid) {
 }
 
 void TF::FuVideoPage_Ui::initVideoArea() {
-    mVideoAreaWid = new QWidget(mWid);
-    mVideoAreaWid->setObjectName("VideoAreaWid");
-    QSizePolicy sizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
-    sizePolicy.setHorizontalStretch(0);
-    sizePolicy.setVerticalStretch(0);
-    sizePolicy.setHeightForWidth(mVideoAreaWid->sizePolicy().hasHeightForWidth());
-    mVideoAreaWid->setSizePolicy(sizePolicy);
-
-    mVideoGLayout = new QGridLayout(mVideoAreaWid);
-    mVideoGLayout->setSpacing(0);
-    mVideoGLayout->setObjectName("VideoGLayout");
-    mVideoGLayout->setContentsMargins(0, 0, 0, 0);
-
-    mMainVLayout->addWidget(mVideoAreaWid);
+    mVideoViewer = new VideoWidget(mWid);
+    mVideoViewer->setObjectName("VideoViewer");
+    mVideoViewer->resize(1000, 600);
+    qDebug() << mVideoViewer->size();
+    mMainVLayout->addWidget(mVideoViewer);
 }
 
 void TF::FuVideoPage_Ui::initCtrlArea() {

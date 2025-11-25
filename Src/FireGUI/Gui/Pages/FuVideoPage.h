@@ -32,6 +32,9 @@ namespace TF {
 
         ~FuVideoPage() final;
 
+    public:
+        VideoWidget* getVideoWid() {return mVideoWid;}
+
     private slots:
         void onFileDrag(const QString &url);
 
@@ -51,10 +54,7 @@ namespace TF {
 
         bool mIsMax;
 
-        QMenu *mVideoMenu;
-        VideoBox *mVideoBox;
-        VideoWidget *mVideoSelect;
-        QList<VideoWidget*> mVideoWids;
+        VideoWidget *mVideoWid {nullptr};
 
         static const int mVideoNum = 1;
 

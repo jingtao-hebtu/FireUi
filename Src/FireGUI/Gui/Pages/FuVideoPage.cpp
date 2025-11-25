@@ -15,6 +15,7 @@ Copyright(C), tao.jing All rights reserved
 #include "videowidgetx.h"
 #include "deviceutil.h"
 #include "qthelper.h"
+#include "videohelper.h"
 #include "TConfig.h"
 #include "FuVideoButtons.h"
 #include <iostream>
@@ -48,31 +49,26 @@ void TF::FuVideoPage::initActions() {
 }
 
 void TF::FuVideoPage::initVideo() {
-    mVideoSelect = nullptr;
-    mVideoWids.clear();
+    mVideoWid = mUi->mVideoViewer;
+    //DeviceUtil::initVideoWidget2(mVideoWid);
 
-    QWidgetList widgets;
-    for (int i = 0; i < mVideoNum; ++i) {
-        auto *video_wid = new VideoWidget;
-        connect(video_wid, SIGNAL(sig_fileDrag(QString)), this, SLOT(onFileDrag(QString)));
-        DeviceUtil::initVideoWidget2(video_wid);
-        video_wid->installEventFilter(this);
-        video_wid->hideButton();
-        video_wid->setBgText(QString("通道 %1").arg(i + 1, 2, 10, QChar('0')));
-        widgets << video_wid;
-        mVideoWids << video_wid;
-    }
+    WidgetPara widgetPara = mVideoWid->getWidgetPara();
+    //widgetPara.borderWidth = 5;
+    //widgetPara.bgImage = QImage(QString("%1/config/bg_novideo.png").arg(QtHelper::appPath()));
+    //widgetPara.bannerEnable = true;
+    widgetPara.scaleMode = ScaleMode_Auto;
+    widgetPara.videoMode = VideoMode_Hwnd;
+    mVideoWid->setWidgetPara(widgetPara);
 
-    mIsMax = false;
-    mVideoMenu = new QMenu(this);
-    mVideoSelect = mVideoWids.first();
-
-    mVideoBox = new VideoBox(this);
-    mVideoBox->setLayout(mUi->mVideoGLayout);
-    mVideoBox->setLayoutType("1-1");
-    mVideoBox->initMenu(mVideoMenu);
-    mVideoBox->setWidgets(widgets);
-    mVideoBox->show_all();
+    VideoPara videoPara = mVideoWid->getVideoPara();
+    videoPara.videoCore = VideoHelper::getVideoCore();
+    videoPara.decodeType = DecodeType_Fast;
+    videoPara.hardware = "none";
+    videoPara.transport = "tcp";
+    videoPara.playRepeat = false;
+    videoPara.readTimeout = 0;
+    videoPara.connectTimeout = 1000;
+    mVideoWid->setVideoPara(videoPara);
 }
 
 void TF::FuVideoPage::onFileDrag(const QString& url) {
@@ -81,15 +77,16 @@ void TF::FuVideoPage::onFileDrag(const QString& url) {
 }
 
 void TF::FuVideoPage::onStreamButtonPressed() {
-    if (!mVideoSelect) {
+    if (!mVideoWid) {
         return;
     }
 
     // Start stream
     if (!mUi->mStreamToggleBtn->isChecked()) {
         if (!mRGBCamPlaying.load()) {
-            std::string video_url = GET_STR_CONFIG("VideoURL");
-            if (mVideoSelect->open(video_url.c_str())) {
+            auto video_url = GET_STR_CONFIG("VideoURL");
+            if (mVideoWid->open(video_url.c_str())) {
+                qDebug() << mVideoWid->size();
                 mRGBCamPlaying.store(true);
             } else {
                 mUi->mStreamToggleBtn->setChecked(false);
@@ -99,19 +96,19 @@ void TF::FuVideoPage::onStreamButtonPressed() {
     // Stop stream
     else if (mUi->mStreamToggleBtn->isChecked()) {
         if (mRGBCamPlaying.load()) {
-            mVideoSelect->stop();
+            mVideoWid->stop();
             mRGBCamPlaying.store(false);
         }
     }
 }
 
 void TF::FuVideoPage::onSaveButtonToggled(bool checked) {
-    if (!mVideoSelect) {
+    if (!mVideoWid) {
         return;
     }
 
     if (checked) {
-        if (!mVideoSelect->getIsRunning()) {
+        if (!mVideoWid->getIsRunning()) {
             mUi->mSaveToggleBtn->setChecked(false);
             return;
         }
@@ -124,11 +121,11 @@ void TF::FuVideoPage::onSaveButtonToggled(bool checked) {
 
         const QString timestamp = QDateTime::currentDateTime().toString("yyyyMMddhhmmss");
         const QString filePath = QDir(videoDir).filePath(QString("%1.mp4").arg(timestamp));
-        mVideoSelect->recordStart(filePath);
+        mVideoWid->recordStart(filePath);
         mRecording.store(true);
     } else {
         if (mRecording.load()) {
-            mVideoSelect->recordStop();
+            mVideoWid->recordStop();
             mRecording.store(false);
         }
     }

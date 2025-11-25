@@ -13,6 +13,8 @@ add_definitions(-Dopenglx)
 
 file(GLOB_RECURSE T_VIDEO_SYSTEM_SRC "${T_VIDEO_SYSTEM_DIR}/*.cpp")
 
+#list(FILTER T_VIDEO_SYSTEM_SRC EXCLUDE REGEX ".*/OpenGL/.*")
+
 set(INCLUDE_DIRS "")
 foreach (FILE_PATH ${T_VIDEO_SYSTEM_SRC})
     get_filename_component(DIR_PATH ${FILE_PATH} PATH)

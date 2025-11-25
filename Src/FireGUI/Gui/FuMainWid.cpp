@@ -15,7 +15,6 @@ Copyright(C), tao.jing All rights reserved
 
 TF::FuMainWid::FuMainWid(QWidget* parent) : QWidget(parent) {
     setupUi();
-    setupConnections();
     initStyle();
 }
 
@@ -28,6 +27,17 @@ void TF::FuMainWid::setupUi() {
     mUi->setupUi(this);
 }
 
+
+void TF::FuMainWid::initStyle() {
+    QFile win_style_file(QString(":/qss/FuMainWid.css"));
+    if (win_style_file.open(QFile::ReadOnly)) {
+        QString styleStr = win_style_file.readAll();
+        setStyleSheet(styleStr);
+        win_style_file.close();
+    }
+}
+
+/*
 void TF::FuMainWid::setupConnections() {
     if (mUi == nullptr) {
         return;
@@ -42,11 +52,4 @@ void TF::FuMainWid::setupConnections() {
     mUi->mSideTabBar->setCurrentIndex(0);
 }
 
-void TF::FuMainWid::initStyle() {
-    QFile win_style_file(QString(":/qss/FuMainWid.css"));
-    if (win_style_file.open(QFile::ReadOnly)) {
-        QString styleStr = win_style_file.readAll();
-        setStyleSheet(styleStr);
-        win_style_file.close();
-    }
-}
+ */

@@ -9,14 +9,14 @@
    Brief  :
 **************************************************************************/
 #include <QApplication>
-#include "FuMainWid.h"
 #include "AppMonitor.h"
+#include "FuMainWid.h"
 
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
-    TF::AppMonitor::instance().initApp(argc, argv);
+    TF::AppMonitor::initApp(argc, argv);
 
     TF::FuMainWid win;
     win.show();

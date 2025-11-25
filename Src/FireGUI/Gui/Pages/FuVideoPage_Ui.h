@@ -16,6 +16,7 @@ Copyright(C), tao.jing All rights reserved
 class QWidget;
 class QVBoxLayout;
 class QGridLayout;
+class VideoWidget;
 
 namespace TF {
     class TechToggleButton;
@@ -45,8 +46,7 @@ namespace TF {
         TechToggleButton* mSaveToggleBtn{nullptr};
         TechActionButton* mRefreshOnceBtn{nullptr};
 
-        QWidget* mVideoAreaWid{nullptr};
-        QGridLayout* mVideoGLayout{nullptr};
+        VideoWidget* mVideoViewer{nullptr};
     };
 } // TF
 

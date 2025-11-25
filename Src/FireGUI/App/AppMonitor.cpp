@@ -22,7 +22,7 @@ int TF::AppMonitor::initApp(int argc, char* argv[]) {
     try {
         initAppLog(argc, argv);
     } catch (std::exception &ex) {
-        std::cerr << "Init app log failed " << ex.what() <<std::endl;
+        std::cerr << "Init app log failed: " << ex.what() <<std::endl;
     }
 
     try {

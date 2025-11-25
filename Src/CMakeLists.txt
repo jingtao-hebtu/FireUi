@@ -15,4 +15,5 @@ set (FU_SRC_DIR ${FU_DIR}/FireUi)
 set (THIRD_PARTY_PATH ${FU_DIR}/ThirdParty/)
 
 
-add_subdirectory(${FU_SRC_DIR})
+set (FIRE_GUI_SRC_DIR ${FU_DIR}/FireGUI)
+add_subdirectory(FireGUI)

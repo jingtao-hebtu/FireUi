@@ -15,11 +15,10 @@ Copyright(C), tao.jing All rights reserved
 #include <QHBoxLayout>
 #include <QStackedWidget>
 
-#include "FuSideTabBar.h"
-
 
 namespace TF {
 
+    class FuSideTabBar;
     class FuVideoPage;
 
     class FuMainWid_Ui {
@@ -34,6 +33,7 @@ namespace TF {
 
         QWidget *mWid {nullptr};
         QHBoxLayout *mLayout {nullptr};
+
         FuSideTabBar *mSideTabBar {nullptr};
         QStackedWidget *mStackedWidget {nullptr};
 
