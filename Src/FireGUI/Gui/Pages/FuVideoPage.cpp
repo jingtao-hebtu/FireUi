@@ -46,6 +46,9 @@ void TF::FuVideoPage::initActions() {
 
     connect(mUi->mSaveToggleBtn, &QPushButton::toggled,
         this, &FuVideoPage::onSaveButtonToggled);
+
+    connect(mUi->mAiToggleBtn, &QPushButton::toggled,
+        this, &FuVideoPage::onAiButtonToggled);
 }
 
 void TF::FuVideoPage::initVideo() {
@@ -58,17 +61,25 @@ void TF::FuVideoPage::initVideo() {
     //widgetPara.bannerEnable = true;
     widgetPara.scaleMode = ScaleMode_Auto;
     widgetPara.videoMode = VideoMode_Opengl;
-    mVideoWid->setWidgetPara(widgetPara);
+    mGpuWidgetPara = widgetPara;
+    mCpuWidgetPara = widgetPara;
+    mCpuWidgetPara.videoMode = VideoMode_Painter;
+    mCpuWidgetPara.copyImage = true;
+    mVideoWid->setWidgetPara(mGpuWidgetPara);
 
     VideoPara videoPara = mVideoWid->getVideoPara();
     videoPara.videoCore = VideoHelper::getVideoCore();
     videoPara.decodeType = DecodeType_Fast;
-    videoPara.hardware = "none";
+    videoPara.hardware = "auto";
     videoPara.transport = "tcp";
     videoPara.playRepeat = false;
     videoPara.readTimeout = 0;
     videoPara.connectTimeout = 1000;
-    mVideoWid->setVideoPara(videoPara);
+    mGpuVideoPara = videoPara;
+    mCpuVideoPara = videoPara;
+    mCpuVideoPara.decodeType = DecodeType_Full;
+    mCpuVideoPara.hardware = "none";
+    mVideoWid->setVideoPara(mGpuVideoPara);
 }
 
 void TF::FuVideoPage::onFileDrag(const QString& url) {
@@ -88,6 +99,7 @@ void TF::FuVideoPage::onStreamButtonPressed() {
             if (mVideoWid->open(video_url.c_str())) {
                 qDebug() << mVideoWid->size();
                 mRGBCamPlaying.store(true);
+                mCurrentUrl = video_url.c_str();
             } else {
                 mUi->mStreamToggleBtn->setChecked(false);
             }
@@ -129,4 +141,37 @@ void TF::FuVideoPage::onSaveButtonToggled(bool checked) {
             mRecording.store(false);
         }
     }
+}
+
+void TF::FuVideoPage::applyDisplayMode(bool aiEnabled) {
+    if (!mVideoWid) {
+        return;
+    }
+
+    const WidgetPara targetWidget = aiEnabled ? mCpuWidgetPara : mGpuWidgetPara;
+    const VideoPara targetVideo = aiEnabled ? mCpuVideoPara : mGpuVideoPara;
+
+    const bool needRestart = mVideoWid->getIsRunning();
+    const QString mediaUrl = mCurrentUrl;
+
+    if (needRestart) {
+        mVideoWid->stop();
+        mRGBCamPlaying.store(false);
+    }
+
+    mVideoWid->setWidgetPara(targetWidget);
+    mVideoWid->setVideoPara(targetVideo);
+
+    if (needRestart && !mediaUrl.isEmpty()) {
+        if (mVideoWid->open(mediaUrl)) {
+            mRGBCamPlaying.store(true);
+        } else {
+            mUi->mStreamToggleBtn->setChecked(false);
+        }
+    }
+}
+
+void TF::FuVideoPage::onAiButtonToggled(bool checked) {
+    mAiEnabled = checked;
+    applyDisplayMode(checked);
 }
