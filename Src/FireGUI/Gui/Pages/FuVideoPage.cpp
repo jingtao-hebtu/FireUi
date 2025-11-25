@@ -57,7 +57,7 @@ void TF::FuVideoPage::initVideo() {
     //widgetPara.bgImage = QImage(QString("%1/config/bg_novideo.png").arg(QtHelper::appPath()));
     //widgetPara.bannerEnable = true;
     widgetPara.scaleMode = ScaleMode_Auto;
-    widgetPara.videoMode = VideoMode_Hwnd;
+    widgetPara.videoMode = VideoMode_Opengl;
     mVideoWid->setWidgetPara(widgetPara);
 
     VideoPara videoPara = mVideoWid->getVideoPara();

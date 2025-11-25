@@ -14,8 +14,7 @@ Copyright(C), tao.jing All rights reserved
 
 #include <QLabel>
 #include <QObject>
-#include <QStackedWidget>
-#include <QVBoxLayout>
+#include <QSizePolicy>
 
 
 void TF::FuMainWid_Ui::setupUi(QWidget *wid) {
@@ -31,15 +30,14 @@ void TF::FuMainWid_Ui::setupUi(QWidget *wid) {
     mSideTabBar->setObjectName("SideTabBar");
     mSideTabBar->setFixedWidth(70);
 
+    mContentWidget = new QWidget(mWid);
+    mContentLayout = new QVBoxLayout(mContentWidget);
+    mContentLayout->setContentsMargins(0, 0, 0, 0);
+    mContentLayout->setSpacing(0);
 
-    mVideoPage = new FuVideoPage(mStackedWidget);
+    mVideoPage = new FuVideoPage(mContentWidget);
     mVideoPage->setObjectName("VideoPage");
 
-    /*
-    // OpenGL模式下
-    // 注释这段后, mLayout添加mVideoPage, 就可以正常显示视频流
-    // 不注释这段，mLayout添加mStackedWidget, 就无法显示视频流
-    mStackedWidget = new QStackedWidget(mWid);
     auto createPage = [](const QString &title, const QString &desc) {
         auto *page = new QWidget();
         auto *layout = new QVBoxLayout(page);
@@ -58,12 +56,19 @@ void TF::FuMainWid_Ui::setupUi(QWidget *wid) {
         return page;
     };
 
-    mStackedWidget->addWidget(mVideoPage);
-    mStackedWidget->addWidget(createPage(QObject::tr("采集"), QObject::tr("双光火焰采集控制")));
-    mStackedWidget->addWidget(createPage(QObject::tr("记录"), QObject::tr("历史记录与回放")));
-    mStackedWidget->addWidget(createPage(QObject::tr("状态"), QObject::tr("当前运行状态详情")));*/
+    mPages.append(mVideoPage);
+    mPages.append(createPage(QObject::tr("采集"), QObject::tr("双光火焰采集控制")));
+    mPages.append(createPage(QObject::tr("记录"), QObject::tr("历史记录与回放")));
+    mPages.append(createPage(QObject::tr("状态"), QObject::tr("当前运行状态详情")));
+
+    for (int i = 0; i < mPages.size(); ++i) {
+        auto *page = mPages.at(i);
+        page->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        mContentLayout->addWidget(page);
+        page->setVisible(i == 0);
+    }
 
     mLayout->addWidget(mSideTabBar);
-    mLayout->addWidget(mVideoPage);
+    mLayout->addWidget(mContentWidget);
     mLayout->setStretch(1, 1);
 }

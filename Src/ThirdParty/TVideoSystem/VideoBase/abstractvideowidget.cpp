@@ -115,7 +115,13 @@ void AbstractVideoWidget::hideOpenGLWidget() {
 #endif
 }
 
-void AbstractVideoWidget::showEvent(QShowEvent *) {
+void AbstractVideoWidget::showEvent(QShowEvent *event) {
+    QWidget::showEvent(event);
+
+    // Stacked containers hide/show child pages; when the page becomes
+    // visible again make sure the OpenGL surface is laid out and visible.
+    this->resizeEvent(nullptr);
+    this->showOpenGLWidget();
     this->clearOpenGLData();
 }
 

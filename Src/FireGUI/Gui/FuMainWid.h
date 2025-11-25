@@ -29,7 +29,7 @@ namespace TF {
 
     private:
         void setupUi();
-        //void setupConnections();
+        void setupConnections();
 
         void initStyle();
 

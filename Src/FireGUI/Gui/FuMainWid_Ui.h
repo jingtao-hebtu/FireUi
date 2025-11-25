@@ -11,9 +11,8 @@ Copyright(C), tao.jing All rights reserved
 #ifndef FIREUI_FUMAINWID_UI_H
 #define FIREUI_FUMAINWID_UI_H
 
-#include <QWidget>
 #include <QHBoxLayout>
-#include <QStackedWidget>
+#include <QVector>
 
 
 namespace TF {
@@ -34,11 +33,14 @@ namespace TF {
         QWidget *mWid {nullptr};
         QHBoxLayout *mLayout {nullptr};
 
+        QWidget *mContentWidget {nullptr};
+        QVBoxLayout *mContentLayout {nullptr};
+
         FuSideTabBar *mSideTabBar {nullptr};
-        QStackedWidget *mStackedWidget {nullptr};
+
+        QVector<QWidget *> mPages;
 
         FuVideoPage *mVideoPage {nullptr};
-
     };
 
 };
