@@ -86,6 +86,11 @@ public:
     //设置逐帧播放
     void setPlayStep(bool playStep);
 
+    // Detection
+    void startDetect();
+
+    void stopDetect();
+
 private slots:
 
     //重新调整尺寸

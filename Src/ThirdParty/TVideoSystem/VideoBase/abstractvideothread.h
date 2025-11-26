@@ -42,6 +42,8 @@ protected:
     volatile bool isSnap;
     //正在录制标志位
     volatile bool isRecord;
+    // AI detecting
+    volatile bool isDetect {false};
 
     //地址标识
     QString addr;
@@ -143,6 +145,8 @@ public:
     bool getIsSnap() const;
 
     bool getIsRecord() const;
+
+    bool getIsDetect() const;
 
 public:
     //主动更新时间(一般事件回调中设置)

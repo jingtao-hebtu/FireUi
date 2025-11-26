@@ -553,6 +553,14 @@ void VideoThread::setConnectTimeout(int connectTimeout) {
     this->connectTimeout = connectTimeout;
 }
 
+void VideoThread::startDetect() {
+    isDetect = true;
+}
+
+void VideoThread::stopDetect() {
+    isDetect = false;
+}
+
 void VideoThread::readMediaInfo() {
 
 }
@@ -738,3 +746,4 @@ void VideoThread::recordStopFinsh() {
         debug("结束录制", QString("文件: %1").arg(fileName));
     }
 }
+

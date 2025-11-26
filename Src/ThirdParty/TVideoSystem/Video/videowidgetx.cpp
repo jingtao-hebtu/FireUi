@@ -307,6 +307,14 @@ void VideoWidget::setPlayStep(bool playStep) {
     }
 }
 
+void VideoWidget::startDetect() {
+    videoThread->startDetect();
+}
+
+void VideoWidget::stopDetect() {
+    videoThread->stopDetect();
+}
+
 void VideoWidget::resize2() {
     //如果有旋转角度则宽高对调
     if (rotate == 90) {

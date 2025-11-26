@@ -104,6 +104,10 @@ bool AbstractVideoThread::getIsRecord() const {
     return this->isRecord;
 }
 
+bool AbstractVideoThread::getIsDetect() const {
+    return this->isDetect;
+}
+
 void AbstractVideoThread::updateTime() {
     lastTime = QDateTime::currentDateTime();
 }

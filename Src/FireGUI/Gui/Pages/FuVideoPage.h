@@ -13,7 +13,8 @@ Copyright(C), tao.jing All rights reserved
 
 #include <QWidget>
 #include <QString>
-#include "../../../ThirdParty/TVideoSystem/VideoBase/widgetstruct.h"
+#include "widgetstruct.h"
+#include "videostruct.h"
 #include <atomic>
 
 class VideoBox;
@@ -28,9 +29,10 @@ struct VideoPara;
 namespace TF {
     class FuVideoPage_Ui;
 
+    class DetectorThread;
+
     class FuVideoPage : public QWidget
     {
-
         Q_OBJECT
 
     public:
@@ -39,10 +41,10 @@ namespace TF {
         ~FuVideoPage() final;
 
     public:
-        VideoWidget* getVideoWid() {return mVideoWid;}
+        VideoWidget* getVideoWid() { return mVideoWid; }
 
     private slots:
-        void onFileDrag(const QString &url);
+        void onFileDrag(const QString& url);
 
         void onStreamButtonPressed();
 
@@ -60,24 +62,25 @@ namespace TF {
         void applyDisplayMode(bool aiEnabled);
 
     private:
-        FuVideoPage_Ui* mUi;
+        FuVideoPage_Ui* mUi{nullptr};
 
         bool mIsMax;
 
-        VideoWidget *mVideoWid {nullptr};
+        VideoWidget* mVideoWid{nullptr};
+        DetectorThread* mDetectorThread{nullptr};
 
         static const int mVideoNum = 1;
 
-        std::atomic<bool> mRGBCamPlaying {false};
+        std::atomic<bool> mRGBCamPlaying{false};
 
-        std::atomic<bool> mRecording {false};
+        std::atomic<bool> mRecording{false};
 
         WidgetPara mGpuWidgetPara;
         WidgetPara mCpuWidgetPara;
         VideoPara mGpuVideoPara;
         VideoPara mCpuVideoPara;
         QString mCurrentUrl;
-        bool mAiEnabled {false};
+        bool mAiEnabled{false};
     };
 } // TF
 

@@ -18,6 +18,7 @@ Copyright(C), tao.jing All rights reserved
 #include "videohelper.h"
 #include "TConfig.h"
 #include "FuVideoButtons.h"
+#include "DetectorThread.h"
 #include <iostream>
 #include <QDateTime>
 #include <QDir>
@@ -26,6 +27,12 @@ Copyright(C), tao.jing All rights reserved
 
 TF::FuVideoPage::FuVideoPage(QWidget* parent) : QWidget(parent) {
     setupUI();
+
+    mDetectorThread = new DetectorThread(mVideoWid, 100, this);
+    mDetectorThread->setPause(true);
+    mDetectorThread->setStopped(false);
+    //mDetectorThread->start();
+
 }
 
 TF::FuVideoPage::~FuVideoPage() {
@@ -172,6 +179,11 @@ void TF::FuVideoPage::applyDisplayMode(bool aiEnabled) {
 }
 
 void TF::FuVideoPage::onAiButtonToggled(bool checked) {
-    mAiEnabled = checked;
-    applyDisplayMode(checked);
+    if (checked) {
+        //mDetectorThread->setPause(false);
+        mVideoWid->startDetect();
+    } else {
+        //mDetectorThread->setPause(true);
+        mVideoWid->stopDetect();
+    }
 }

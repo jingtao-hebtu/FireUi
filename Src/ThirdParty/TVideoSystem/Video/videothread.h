@@ -230,6 +230,11 @@ public:
 
     void setConnectTimeout(int connectTimeout);
 
+    // Detection
+    void startDetect();
+
+    void stopDetect();
+
 public slots:
 
     //获取媒体信息

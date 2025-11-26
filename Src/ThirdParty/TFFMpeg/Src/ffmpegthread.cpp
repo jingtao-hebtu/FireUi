@@ -332,8 +332,13 @@ bool FFmpegThread::scaleAndSaveVideo(bool &needScale, AVFrame *frame) {
 }
 
 void FFmpegThread::checkAndShowVideo(bool needScale, AVFrame *frame) {
+    //可能有tile滤镜导致产生空帧
+    if (frame->width == 0) {
+        return;
+    }
+
     //截图和绘制都转成图片
-    if (isSnap || videoMode == VideoMode_Painter) {
+    if (isDetect || isSnap || videoMode == VideoMode_Painter) {
         //启动计时
         timer.restart();
         //截图如果设置的从原始图像截图则取最原始的视频帧
@@ -366,11 +371,6 @@ void FFmpegThread::checkAndShowVideo(bool needScale, AVFrame *frame) {
             emit receiveImage(image, timer.elapsed());
             return;
         }
-    }
-
-    //可能有tile滤镜导致产生空帧
-    if (frame->width == 0) {
-        return;
     }
 
     //qDebug() << TIMEMS << videoWidth << videoHeight << frame->width << frame->height << frame->linesize[0] << frame->linesize[1] << frame->linesize[2];

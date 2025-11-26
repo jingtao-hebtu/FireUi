@@ -304,9 +304,11 @@ struct WidgetPara {
         borderColor = Qt::transparent;
         focusColor = "#22A3A9";
 
-        bgColor = Qt::black;
+        //bgColor = Qt::black;
+        bgColor = Qt::transparent;
         textColor = Qt::transparent;
-        fillColor = Qt::black;
+        //fillColor = Qt::black;
+        fillColor = Qt::transparent;
 
         bgTextSize = 25;
         bgText = "视频";
