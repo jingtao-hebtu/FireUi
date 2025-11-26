@@ -61,6 +61,7 @@ AbstractVideoWidget::AbstractVideoWidget(QWidget *parent) : QWidget(parent) {
 
     kbps = 0;
     hardware = "none";
+    pendingOpenGLShow = false;
 
     isRunning = false;
     isShared = false;
@@ -115,14 +116,24 @@ void AbstractVideoWidget::hideOpenGLWidget() {
 #endif
 }
 
+void AbstractVideoWidget::ensureOpenGLVisible() {
+#ifdef openglx
+    if (pendingOpenGLShow && widgetPara.videoMode == VideoMode_Opengl && !onlyAudio) {
+        pendingOpenGLShow = false;
+        this->showOpenGLWidget();
+    }
+#endif
+}
+
 void AbstractVideoWidget::showEvent(QShowEvent *event) {
     QWidget::showEvent(event);
 
     // Stacked containers hide/show child pages; when the page becomes
     // visible again make sure the OpenGL surface is laid out and visible.
     this->resizeEvent(nullptr);
-    this->showOpenGLWidget();
-    this->clearOpenGLData();
+    if (widgetPara.videoMode == VideoMode_Opengl && isRunning && !pendingOpenGLShow) {
+        this->showOpenGLWidget();
+    }
 }
 
 void AbstractVideoWidget::closeEvent(QCloseEvent *) {
@@ -870,9 +881,12 @@ void AbstractVideoWidget::receivePlayStart(int time) {
     this->update();
     this->setPalettex(true);
 
+    pendingOpenGLShow = (widgetPara.videoMode == VideoMode_Opengl && !onlyAudio);
     this->hideOpenGLWidget();
-    this->showOpenGLWidget();
     this->clearOpenGLData();
+    if (!pendingOpenGLShow) {
+        this->showOpenGLWidget();
+    }
 
     //如果是遮罩窗体则启动定时器绘制时间
     if (widgetPara.osdDrawMode == DrawMode_Cover) {
@@ -891,6 +905,8 @@ void AbstractVideoWidget::receivePlayFinsh() {
     videoHeight = 0;
     this->clear();
     this->setPalettex(false);
+
+    pendingOpenGLShow = false;
 
     bannerWidget->setVisible(false);
     this->clearOpenGLData();
@@ -922,6 +938,7 @@ void AbstractVideoWidget::receiveFrame(int width, int height, quint8 *dataRGB, i
 #ifdef openglx
     //这里要过滤下可能线程刚好结束了但是信号已经到这里
     if (sender()) {
+        ensureOpenGLVisible();
         rgbWidget->updateFrame(width, height, dataRGB, type);
     }
 #endif
@@ -933,6 +950,7 @@ AbstractVideoWidget::receiveFrame(int width, int height, quint8 *dataY, quint8 *
 #ifdef openglx
     //这里要过滤下可能线程刚好结束了但是信号已经到这里
     if (sender()) {
+        ensureOpenGLVisible();
         yuvWidget->updateFrame(width, height, dataY, dataU, dataV, linesizeY, linesizeU, linesizeV);
     }
 #endif
@@ -943,6 +961,7 @@ void AbstractVideoWidget::receiveFrame(int width, int height, quint8 *dataY, qui
 #ifdef openglx
     //这里要过滤下可能线程刚好结束了但是信号已经到这里
     if (sender()) {
+        ensureOpenGLVisible();
         nv12Widget->updateFrame(width, height, dataY, dataUV, linesizeY, linesizeUV);
     }
 #endif

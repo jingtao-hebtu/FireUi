@@ -87,6 +87,8 @@ protected:
 
     void drawImage(QPainter *painter);
 
+    void ensureOpenGLVisible();
+
 protected:
     //数据锁
     QMutex mutex;
@@ -138,6 +140,8 @@ protected:
     qreal kbps;
     //硬件加速类型
     QString hardware;
+    //首帧到达前是否需要延后显示GPU画面
+    bool pendingOpenGLShow;
 
     //窗体参数结构体
     WidgetPara widgetPara;

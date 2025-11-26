@@ -12,11 +12,17 @@ Copyright(C), tao.jing All rights reserved
 #define FIREUI_FUVIDEOPAGE_H
 
 #include <QWidget>
+#include <QString>
+#include "../../../ThirdParty/TVideoSystem/VideoBase/widgetstruct.h"
 #include <atomic>
 
 class VideoBox;
 
 class VideoWidget;
+
+struct WidgetPara;
+
+struct VideoPara;
 
 
 namespace TF {
@@ -42,12 +48,16 @@ namespace TF {
 
         void onSaveButtonToggled(bool checked);
 
+        void onAiButtonToggled(bool checked);
+
     private:
         void setupUI();
 
         void initActions();
 
         void initVideo();
+
+        void applyDisplayMode(bool aiEnabled);
 
     private:
         FuVideoPage_Ui* mUi;
@@ -61,6 +71,13 @@ namespace TF {
         std::atomic<bool> mRGBCamPlaying {false};
 
         std::atomic<bool> mRecording {false};
+
+        WidgetPara mGpuWidgetPara;
+        WidgetPara mCpuWidgetPara;
+        VideoPara mGpuVideoPara;
+        VideoPara mCpuVideoPara;
+        QString mCurrentUrl;
+        bool mAiEnabled {false};
     };
 } // TF
 
