@@ -937,6 +937,10 @@ void AbstractVideoWidget::receiveSizeChanged() {
 void AbstractVideoWidget::receiveFrame(int width, int height, quint8 *dataRGB, int type) {
 #ifdef openglx
     //这里要过滤下可能线程刚好结束了但是信号已经到这里
+    if (!image.isNull()) {
+        image = QImage();
+        update();
+    }
     if (sender()) {
         ensureOpenGLVisible();
         rgbWidget->updateFrame(width, height, dataRGB, type);
@@ -949,6 +953,10 @@ AbstractVideoWidget::receiveFrame(int width, int height, quint8 *dataY, quint8 *
                                   quint32 linesizeU, quint32 linesizeV) {
 #ifdef openglx
     //这里要过滤下可能线程刚好结束了但是信号已经到这里
+    if (!image.isNull()) {
+        image = QImage();
+        update();
+    }
     if (sender()) {
         ensureOpenGLVisible();
         yuvWidget->updateFrame(width, height, dataY, dataU, dataV, linesizeY, linesizeU, linesizeV);
@@ -960,6 +968,10 @@ void AbstractVideoWidget::receiveFrame(int width, int height, quint8 *dataY, qui
                                        quint32 linesizeUV) {
 #ifdef openglx
     //这里要过滤下可能线程刚好结束了但是信号已经到这里
+    if (!image.isNull()) {
+        image = QImage();
+        update();
+    }
     if (sender()) {
         ensureOpenGLVisible();
         nv12Widget->updateFrame(width, height, dataY, dataUV, linesizeY, linesizeUV);
