@@ -33,7 +33,6 @@ void TF::FuVideoPage_Ui::initVideoArea() {
     mVideoViewer = new VideoWidget(mWid);
     mVideoViewer->setObjectName("VideoViewer");
     mVideoViewer->resize(1000, 600);
-    qDebug() << mVideoViewer->size();
     mMainVLayout->addWidget(mVideoViewer);
 }
 
@@ -42,8 +41,8 @@ void TF::FuVideoPage_Ui::initCtrlArea() {
     mCtrlHLayout->setSpacing(12);
     mCtrlHLayout->setContentsMargins(10, 10, 10, 10);
 
-    mStreamToggleBtn = new TechToggleButton("主相机", mWid);
-    mStreamToggleBtn->setObjectName("StartStopStream");
+    mMainCamToggleBtn = new TechToggleButton("主相机", mWid);
+    mMainCamToggleBtn->setObjectName("StartStopStream");
 
     mAiToggleBtn = new TechToggleButton("AI检测", mWid);
     mAiToggleBtn->setObjectName("StartStopAi");
@@ -54,7 +53,7 @@ void TF::FuVideoPage_Ui::initCtrlArea() {
     mRefreshOnceBtn = new TechActionButton("刷新显示", mWid);
     mRefreshOnceBtn->setObjectName("RefreshOnce");
 
-    mCtrlHLayout->addWidget(mStreamToggleBtn);
+    mCtrlHLayout->addWidget(mMainCamToggleBtn);
     mCtrlHLayout->addWidget(mAiToggleBtn);
     mCtrlHLayout->addWidget(mSaveToggleBtn);
     mCtrlHLayout->addWidget(mRefreshOnceBtn);

@@ -48,7 +48,7 @@ void TF::FuVideoPage::setupUI() {
 }
 
 void TF::FuVideoPage::initActions() {
-    connect(mUi->mStreamToggleBtn, &QPushButton::pressed,
+    connect(mUi->mMainCamToggleBtn, &QPushButton::pressed,
         this, &FuVideoPage::onStreamButtonPressed);
 
     connect(mUi->mSaveToggleBtn, &QPushButton::toggled,
@@ -90,7 +90,7 @@ void TF::FuVideoPage::initVideo() {
 }
 
 void TF::FuVideoPage::onFileDrag(const QString& url) {
-    VideoWidget *videoWidget = (VideoWidget *) sender();
+    auto videoWidget = (VideoWidget *) sender();
     videoWidget->open(url);
 }
 
@@ -100,23 +100,22 @@ void TF::FuVideoPage::onStreamButtonPressed() {
     }
 
     // Start stream
-    if (!mUi->mStreamToggleBtn->isChecked()) {
-        if (!mRGBCamPlaying.load()) {
+    if (!mUi->mMainCamToggleBtn->isChecked()) {
+        if (!mMainCamPlaying.load()) {
             auto video_url = GET_STR_CONFIG("VideoURL");
             if (mVideoWid->open(video_url.c_str())) {
-                qDebug() << mVideoWid->size();
-                mRGBCamPlaying.store(true);
+                mMainCamPlaying.store(true);
                 mCurrentUrl = video_url.c_str();
             } else {
-                mUi->mStreamToggleBtn->setChecked(false);
+                mUi->mMainCamToggleBtn->setChecked(false);
             }
         }
     }
     // Stop stream
-    else if (mUi->mStreamToggleBtn->isChecked()) {
-        if (mRGBCamPlaying.load()) {
+    else if (mUi->mMainCamToggleBtn->isChecked()) {
+        if (mMainCamPlaying.load()) {
             mVideoWid->stop();
-            mRGBCamPlaying.store(false);
+            mMainCamPlaying.store(false);
         }
     }
 }
@@ -150,35 +149,16 @@ void TF::FuVideoPage::onSaveButtonToggled(bool checked) {
     }
 }
 
-void TF::FuVideoPage::applyDisplayMode(bool aiEnabled) {
-    if (!mVideoWid) {
-        return;
-    }
-
-    const WidgetPara targetWidget = aiEnabled ? mCpuWidgetPara : mGpuWidgetPara;
-    const VideoPara targetVideo = aiEnabled ? mCpuVideoPara : mGpuVideoPara;
-
-    const bool needRestart = mVideoWid->getIsRunning();
-    const QString mediaUrl = mCurrentUrl;
-
-    if (needRestart) {
-        mVideoWid->stop();
-        mRGBCamPlaying.store(false);
-    }
-
-    mVideoWid->setWidgetPara(targetWidget);
-    mVideoWid->setVideoPara(targetVideo);
-
-    if (needRestart && !mediaUrl.isEmpty()) {
-        if (mVideoWid->open(mediaUrl)) {
-            mRGBCamPlaying.store(true);
-        } else {
-            mUi->mStreamToggleBtn->setChecked(false);
+void TF::FuVideoPage::onAiButtonToggled(bool checked) {
+    if (checked) {
+        if (!mMainCamPlaying.load()) {
+            mUi->mAiToggleBtn->blockSignals(true);
+            mUi->mAiToggleBtn->setChecked(false);
+            mUi->mAiToggleBtn->blockSignals(false);
+            return;
         }
     }
-}
 
-void TF::FuVideoPage::onAiButtonToggled(bool checked) {
     if (checked) {
         //mDetectorThread->setPause(false);
         mVideoWid->startDetect();

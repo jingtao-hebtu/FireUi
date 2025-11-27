@@ -59,19 +59,13 @@ namespace TF {
 
         void initVideo();
 
-        void applyDisplayMode(bool aiEnabled);
-
     private:
         FuVideoPage_Ui* mUi{nullptr};
-
-        bool mIsMax;
 
         VideoWidget* mVideoWid{nullptr};
         DetectorThread* mDetectorThread{nullptr};
 
-        static const int mVideoNum = 1;
-
-        std::atomic<bool> mRGBCamPlaying{false};
+        std::atomic<bool> mMainCamPlaying{false};
 
         std::atomic<bool> mRecording{false};
 

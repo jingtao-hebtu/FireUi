@@ -41,7 +41,7 @@ namespace TF {
         QVBoxLayout* mMainVLayout{nullptr};
 
         QHBoxLayout* mCtrlHLayout{nullptr};
-        TechToggleButton* mStreamToggleBtn{nullptr};
+        TechToggleButton* mMainCamToggleBtn{nullptr};
         TechToggleButton* mAiToggleBtn{nullptr};
         TechToggleButton* mSaveToggleBtn{nullptr};
         TechActionButton* mRefreshOnceBtn{nullptr};

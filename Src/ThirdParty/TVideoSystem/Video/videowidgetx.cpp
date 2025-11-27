@@ -308,10 +308,18 @@ void VideoWidget::setPlayStep(bool playStep) {
 }
 
 void VideoWidget::startDetect() {
+    if (!videoThread) {
+        return;
+    }
+
     videoThread->startDetect();
 }
 
 void VideoWidget::stopDetect() {
+    if (!videoThread) {
+        return;
+    }
+
     videoThread->stopDetect();
 }
 
