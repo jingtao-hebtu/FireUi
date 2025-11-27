@@ -4,6 +4,8 @@
 #include "bannerwidget.h"
 #include "widgethelper.h"
 #include "urlhelper.h"
+#include "Detector/DetectionQueueManager.h"
+#include "Detector/DetectorWorkerManager.h"
 
 
 VideoWidget::VideoWidget(QWidget *parent) : AbstractVideoWidget(parent) {
@@ -22,6 +24,7 @@ VideoWidget::VideoWidget(QWidget *parent) : AbstractVideoWidget(parent) {
 }
 
 VideoWidget::~VideoWidget() {
+    stopDetect();
     this->stop();
 }
 
@@ -312,15 +315,35 @@ void VideoWidget::startDetect() {
         return;
     }
 
+    if (detectionEnabled) {
+        return;
+    }
+
+    detectionEnabled = true;
+    detectionFlag = videoThread->getFlag();
+
+    TF::DetectionQueueManager::instance().start();
+    auto &manager = TF::DetectorWorkerManager::instance();
+    connect(&manager, &TF::DetectorWorkerManager::frameProcessed, this, &VideoWidget::receiveDetectedImage,
+            Qt::UniqueConnection);
+    manager.start();
+
     videoThread->startDetect();
 }
 
 void VideoWidget::stopDetect() {
-    if (!videoThread) {
+    if (!detectionEnabled) {
         return;
     }
 
-    videoThread->stopDetect();
+    detectionEnabled = false;
+    detectionFlag.clear();
+
+    if (videoThread) {
+        videoThread->stopDetect();
+    }
+    TF::DetectionQueueManager::instance().stop();
+    TF::DetectorWorkerManager::instance().stop();
 }
 
 void VideoWidget::resize2() {
@@ -405,9 +428,29 @@ bool VideoWidget::checkReceive(bool clear) {
 }
 
 void VideoWidget::receiveImage(const QImage &image, int time) {
-    if (this->checkReceive(true)) {
-        AbstractVideoWidget::receiveImage(image, time);
+    if (!this->checkReceive(true)) {
+        return;
     }
+
+    if (detectionEnabled && videoThread && videoThread->getIsDetect()) {
+        TF::DetectionQueueManager::instance().enqueue(detectionFlag, image, time);
+        return;
+    }
+
+    AbstractVideoWidget::receiveImage(image, time);
+}
+
+void VideoWidget::receiveDetectedImage(const QString &flag, const QImage &image, double meanValue, int time) {
+    if (!this->checkReceive(true)) {
+        return;
+    }
+
+    if (!detectionEnabled || detectionFlag != flag) {
+        return;
+    }
+
+    Q_UNUSED(meanValue);
+    AbstractVideoWidget::receiveImage(image, time);
 }
 
 void VideoWidget::receiveFrame(int width, int height, quint8 *dataRGB, int type) {
@@ -698,6 +741,8 @@ void VideoWidget::play() {
 }
 
 void VideoWidget::stop() {
+    stopDetect();
+
     //立即隐藏悬浮条
     bannerWidget->setVisible(false);
     //关闭的时候将遮罩控件移到最前
