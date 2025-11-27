@@ -23,6 +23,9 @@ private:
     VideoPara videoPara;
     //采集线程
     VideoThread *videoThread;
+    //AI检测
+    bool detectionEnabled{false};
+    QString detectionFlag;
 
 public:
     //获取和设置采集参数
@@ -112,6 +115,8 @@ private slots:
 
     //收到一张图片
     void receiveImage(const QImage &image, int time);
+
+    void receiveDetectedImage(const QString &flag, const QImage &image, double meanValue, int time);
 
     //接收一帧并绘制
     void receiveFrame(int width, int height, quint8 *dataRGB, int type);
