@@ -36,6 +36,8 @@ private:
     FFmpegThread *thread;
     //数据包队列
     QList<AVPacket *> packets;
+    //队列最大缓存帧数(<=0 表示不限制)
+    int m_maxFrames = 5;
 
     //当前帧显示时间
     double ptsTime;
@@ -60,6 +62,9 @@ public:
 
     //添加数据包
     void append(AVPacket *packet);
+
+    //设置队列最大缓存帧数
+    void setMaxFrames(int maxFrames);
 
     //获取队列中包的数量
     int getPacketCount();
