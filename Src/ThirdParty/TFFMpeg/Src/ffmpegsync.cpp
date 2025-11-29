@@ -1,6 +1,7 @@
 ﻿#include "ffmpegsync.h"
 #include "ffmpeghelper.h"
 #include "ffmpegthread.h"
+#include <QMutexLocker>
 
 FFmpegSync::FFmpegSync(StreamType streamType, QObject *parent) : QThread(parent) {
     this->stopped = false;
@@ -94,8 +95,17 @@ void FFmpegSync::reset() {
 
 void FFmpegSync::append(AVPacket *packet) {
     mutex.lock();
+    if (m_maxFrames > 0 && packets.count() >= m_maxFrames) {
+        AVPacket *oldest = packets.takeFirst();
+        FFmpegHelper::freePacket(oldest);
+    }
     packets << packet;
     mutex.unlock();
+}
+
+void FFmpegSync::setMaxFrames(int maxFrames) {
+    QMutexLocker locker(&mutex);
+    m_maxFrames = maxFrames;
 }
 
 int FFmpegSync::getPacketCount() {
