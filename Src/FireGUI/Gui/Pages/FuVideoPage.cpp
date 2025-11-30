@@ -22,6 +22,24 @@ Copyright(C), tao.jing All rights reserved
 #include <iostream>
 #include <QDateTime>
 #include <QDir>
+#include <QSysInfo>
+
+namespace {
+bool isJetsonPlatform() {
+#if defined(Q_OS_LINUX)
+    const QString arch = QSysInfo::currentCpuArchitecture().toLower();
+    if (!arch.contains("aarch64") && !arch.contains("arm64")) {
+        return false;
+    }
+
+    const QString product = QSysInfo::prettyProductName().toLower();
+    const QString machine = QSysInfo::machineHostName().toLower();
+    return product.contains("jetson") || machine.contains("jetson") || qEnvironmentVariableIsSet("JETSON_PLATFORM");
+#else
+    return false;
+#endif
+}
+}
 
 
 
@@ -62,6 +80,9 @@ void TF::FuVideoPage::initVideo() {
     mVideoWid = mUi->mVideoViewer;
     //DeviceUtil::initVideoWidget2(mVideoWid);
 
+    const bool jetsonPlatform = isJetsonPlatform();
+    const QString defaultHardware = (jetsonPlatform ? QStringLiteral("nvdec") : QStringLiteral("auto"));
+
     WidgetPara widgetPara = mVideoWid->getWidgetPara();
     //widgetPara.borderWidth = 5;
     //widgetPara.bgImage = QImage(QString("%1/config/bg_novideo.png").arg(QtHelper::appPath()));
@@ -77,7 +98,7 @@ void TF::FuVideoPage::initVideo() {
     VideoPara videoPara = mVideoWid->getVideoPara();
     videoPara.videoCore = VideoHelper::getVideoCore();
     videoPara.decodeType = DecodeType_Fast;
-    videoPara.hardware = "auto";
+    videoPara.hardware = defaultHardware;
     videoPara.transport = "tcp";
     videoPara.playRepeat = false;
     videoPara.readTimeout = 0;
@@ -85,7 +106,7 @@ void TF::FuVideoPage::initVideo() {
     mGpuVideoPara = videoPara;
     mCpuVideoPara = videoPara;
     mCpuVideoPara.decodeType = DecodeType_Full;
-    mCpuVideoPara.hardware = "none";
+    mCpuVideoPara.hardware = (jetsonPlatform ? defaultHardware : QStringLiteral("none"));
     mVideoWid->setVideoPara(mGpuVideoPara);
 }
 

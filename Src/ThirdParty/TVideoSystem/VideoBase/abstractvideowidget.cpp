@@ -2,6 +2,25 @@
 #include "widgethelper.h"
 #include "bannerwidget.h"
 
+#include <QSysInfo>
+
+namespace {
+bool isJetsonPlatform() {
+#if defined(Q_OS_LINUX)
+    const QString arch = QSysInfo::currentCpuArchitecture().toLower();
+    if (!arch.contains("aarch64") && !arch.contains("arm64")) {
+        return false;
+    }
+
+    const QString product = QSysInfo::prettyProductName().toLower();
+    const QString machine = QSysInfo::machineHostName().toLower();
+    return product.contains("jetson") || machine.contains("jetson") || qEnvironmentVariableIsSet("JETSON_PLATFORM");
+#else
+    return false;
+#endif
+}
+}
+
 #ifdef openglx
 #include "openglinclude.h"
 #endif
@@ -60,7 +79,7 @@ AbstractVideoWidget::AbstractVideoWidget(QWidget *parent) : QWidget(parent) {
     onlyAudio = false;
 
     kbps = 0;
-    hardware = "none";
+    hardware = (isJetsonPlatform() ? QStringLiteral("nvdec") : QStringLiteral("none"));
     pendingOpenGLShow = false;
 
     isRunning = false;
