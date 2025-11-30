@@ -156,6 +156,10 @@ private:
     //统计 sws_scale 调用次数
     int swsScaleCallCount;
     QElapsedTimer swsScaleLogTimer;
+    //打印解码状态的帧间隔
+    int m_logInterval = 90;
+    //累计解码视频帧数
+    qint64 m_decodedVideoFrames = 0;
 
 private:
     //读取并清空(视频流暂停期间)
@@ -180,6 +184,8 @@ private:
     bool needScaleOrConvert(const AVFrame *frame, AVPixelFormat format) const;
 
     void logSwsScaleUsage();
+
+    void logDecodeStatus();
 
     //转换和保存视频
     bool scaleAndSaveVideo(bool &needScale, AVFrame *frame);
