@@ -157,7 +157,7 @@ private:
     int swsScaleCallCount;
     QElapsedTimer swsScaleLogTimer;
     //打印解码状态的帧间隔
-    int m_logInterval = 90;
+    int m_logDecodeInterval = 600;
     //累计解码视频帧数
     qint64 m_decodedVideoFrames = 0;
 

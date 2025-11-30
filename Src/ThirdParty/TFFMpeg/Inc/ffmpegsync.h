@@ -44,7 +44,7 @@ private:
     //低延迟模式(丢弃积压帧)
     bool m_lowLatencyMode = false;
     //打印日志的帧间隔
-    int m_logInterval = 90;
+    int m_logQueueInterval = 600;
     //累计处理的帧数
     qint64 m_processedCount = 0;
     //累计丢弃的帧数

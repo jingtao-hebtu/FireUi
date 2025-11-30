@@ -33,7 +33,7 @@ void FFmpegSync::run() {
             continue;
         }
 
-        if (m_lowLatencyMode && packets.count() > 1) {
+        if (m_lowLatencyMode && packets.count() > 3) {
             int dropCount = 0;
             while (packets.count() > 1) {
                 AVPacket *dropped = packets.takeFirst();
@@ -111,8 +111,10 @@ void FFmpegSync::run() {
             const int queueSize = packets.count();
             mutex.unlock();
             m_processedCount++;
-            if (m_processedCount % m_logInterval == 0) {
-                logQueueState(QStringLiteral("take"), queueSize);
+            if (m_processedCount % m_logQueueInterval == 0) {
+                if (streamType == StreamType_Video) {
+                    logQueueState(QStringLiteral("take"), queueSize);
+                }
             }
         }
     }

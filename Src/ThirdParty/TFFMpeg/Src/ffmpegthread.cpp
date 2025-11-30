@@ -551,7 +551,7 @@ void FFmpegThread::decodeVideo1(AVPacket *packet) {
     }
 
     m_decodedVideoFrames++;
-    if (m_decodedVideoFrames % m_logInterval == 0) {
+    if (m_decodedVideoFrames % m_logDecodeInterval == 0) {
         logDecodeStatus();
     }
 }
