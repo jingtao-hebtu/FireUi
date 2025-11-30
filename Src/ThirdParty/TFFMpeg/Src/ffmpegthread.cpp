@@ -70,6 +70,8 @@ FFmpegThread::FFmpegThread(QObject *parent) : VideoThread(parent) {
     videoCodecCtx = NULL;
     audioCodecCtx = NULL;
 
+    swsScaleCallCount = 0;
+
     saveVideoType = SaveVideoType_Mp4;
     saveAudioType = SaveAudioType_None;
 
@@ -341,15 +343,45 @@ bool FFmpegThread::checkFrameSize(AVFrame *frame) {
     return true;
 }
 
+bool FFmpegThread::isShaderSupportedFormat(AVPixelFormat format) const {
+    return format == AV_PIX_FMT_YUV420P || format == AV_PIX_FMT_YUVJ420P || format == AV_PIX_FMT_NV12;
+}
+
+bool FFmpegThread::needScaleOrConvert(const AVFrame *frame, AVPixelFormat format) const {
+    if (!frame) {
+        return true;
+    }
+
+    const bool resolutionChanged = frame->width != videoWidth || frame->height != videoHeight;
+    const bool shaderFriendly = isShaderSupportedFormat(format);
+    const bool requiresRgbOutput = (videoMode == VideoMode_Painter || isSnap || isDetect);
+    const bool directYuvSupported = shaderFriendly && !requiresRgbOutput;
+
+    return resolutionChanged || !directYuvSupported;
+}
+
+void FFmpegThread::logSwsScaleUsage() {
+    if (!swsScaleLogTimer.isValid()) {
+        swsScaleLogTimer.start();
+        return;
+    }
+
+    if (swsScaleLogTimer.elapsed() >= 1000) {
+        debug(0, "sws_scale", QString("近1s调用次数: %1").arg(swsScaleCallCount));
+        swsScaleCallCount = 0;
+        swsScaleLogTimer.restart();
+    }
+}
+
 bool FFmpegThread::scaleAndSaveVideo(bool &needScale, AVFrame *frame) {
     if (!checkFrameSize(frame)) {
         return false;
     }
 
     //不是yuv420则先要转换(本地摄像头格式yuyv422/还有些视频文件是各种各样的格式)
-    AVPixelFormat format = videoCodecCtx->pix_fmt;
+    AVPixelFormat format = static_cast<AVPixelFormat>(frame->format);
     //很多摄像头视频流是yuvj420也不需要转换可以直接用(硬解码模式下格式是NV12所以needScale永远为真)
-    needScale = (format != AV_PIX_FMT_YUV420P && format != AV_PIX_FMT_YUVJ420P);
+    needScale = needScaleOrConvert(frame, format);
 
     //非录像阶段硬解码模式下不需要转换
     if (!isRecord && hardware != "none") {
@@ -372,6 +404,8 @@ bool FFmpegThread::scaleAndSaveVideo(bool &needScale, AVFrame *frame) {
         yuvFrame->pts = frame->pts;
         int result = sws_scale(yuvSwsCtx, (const quint8 **) frame->data, frame->linesize, 0, videoHeight,
                                yuvFrame->data, yuvFrame->linesize);
+        ++swsScaleCallCount;
+        logSwsScaleUsage();
         if (result < 0) {
             debug(result, "转换失败", QString("格式: %1").arg(FFmpegHelper::getPixFormatString(format)));
             return false;

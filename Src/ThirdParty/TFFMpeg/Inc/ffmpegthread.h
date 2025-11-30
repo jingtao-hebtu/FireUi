@@ -5,6 +5,8 @@
 #include "ffmpegstruct.h"
 #include "videothread.h"
 
+#include <QElapsedTimer>
+
 class FFmpegSync;
 
 class FFmpegAvio;
@@ -151,6 +153,10 @@ private:
     bool lockData;
     QMutex mutexFrame;
 
+    //统计 sws_scale 调用次数
+    int swsScaleCallCount;
+    QElapsedTimer swsScaleLogTimer;
+
 private:
     //读取并清空(视频流暂停期间)
     void readAndClear();
@@ -168,6 +174,12 @@ private:
 
     //动态监测尺寸变化
     bool checkFrameSize(AVFrame *frame);
+
+    bool isShaderSupportedFormat(AVPixelFormat format) const;
+
+    bool needScaleOrConvert(const AVFrame *frame, AVPixelFormat format) const;
+
+    void logSwsScaleUsage();
 
     //转换和保存视频
     bool scaleAndSaveVideo(bool &needScale, AVFrame *frame);
