@@ -106,9 +106,12 @@ void TF::FuVideoPage::initVideo() {
     videoPara.readTimeout = 0;
     videoPara.connectTimeout = 1000;
     videoPara.lowLatencyMode = lowLatencyMode;
+    videoPara.decodeAudio = false;
+    videoPara.playAudio = false;
+    videoPara.decodeType = DecodeType_Fast;
     mGpuVideoPara = videoPara;
     mCpuVideoPara = videoPara;
-    mCpuVideoPara.decodeType = DecodeType_Full;
+    mCpuVideoPara.decodeType = DecodeType_Fast;
     mCpuVideoPara.hardware = (jetsonPlatform ? defaultHardware : QStringLiteral("none"));
     mVideoWid->setVideoPara(mGpuVideoPara);
 }

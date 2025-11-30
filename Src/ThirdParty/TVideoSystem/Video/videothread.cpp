@@ -3,56 +3,57 @@
 #include "videotask.h"
 #include "urlhelper.h"
 
-QList<VideoThread *> VideoThread::videoThreads;
+QList<VideoThread*> VideoThread::videoThreads;
 
-VideoThread *VideoThread::getVideoThread(const WidgetPara &widgetPara, const VideoPara &videoPara) {
+VideoThread* VideoThread::getVideoThread(const WidgetPara& widgetPara, const VideoPara& videoPara) {
     //句柄模式不能共用
     if (!widgetPara.sharedData || widgetPara.videoMode == VideoMode_Hwnd) {
         return NULL;
     }
 
-    VideoThread *thread = NULL;
-            foreach (VideoThread *videoThread, videoThreads) {
-            //纯音频直接跳过
-            if (videoThread->getOnlyAudio()) {
-                continue;
-            }
-            //内核不一样直接跳过
-            if (videoThread->getVideoCore() != videoPara.videoCore) {
-                continue;
-            }
-
-            //桌面采集和非桌面采集比较方式不一样
-            if (videoThread->getMediaType() != MediaType_Screen) {
-                //地址不一样直接跳过
-                if (videoThread->getMediaUrl() != videoPara.mediaUrl) {
-                    continue;
-                }
-            } else {
-                //分辨率或者帧率或者偏移值不一样则跳过/要完全一样才是同一个屏幕采集
-                if (videoThread->getBufferSize() != videoPara.bufferSize) {
-                    continue;
-                }
-                if (videoThread->getFrameRate() != videoPara.frameRate) {
-                    continue;
-                }
-                if (videoThread->property("offsetX").toInt() != videoPara.offsetX) {
-                    continue;
-                }
-                if (videoThread->property("offsetY").toInt() != videoPara.offsetY) {
-                    continue;
-                }
-            }
-
-            videoThread->refCount++;
-            thread = videoThread;
-            break;
+    VideoThread* thread = NULL;
+    foreach(VideoThread *videoThread, videoThreads) {
+        //纯音频直接跳过
+        if (videoThread->getOnlyAudio()) {
+            continue;
         }
+        //内核不一样直接跳过
+        if (videoThread->getVideoCore() != videoPara.videoCore) {
+            continue;
+        }
+
+        //桌面采集和非桌面采集比较方式不一样
+        if (videoThread->getMediaType() != MediaType_Screen) {
+            //地址不一样直接跳过
+            if (videoThread->getMediaUrl() != videoPara.mediaUrl) {
+                continue;
+            }
+        }
+        else {
+            //分辨率或者帧率或者偏移值不一样则跳过/要完全一样才是同一个屏幕采集
+            if (videoThread->getBufferSize() != videoPara.bufferSize) {
+                continue;
+            }
+            if (videoThread->getFrameRate() != videoPara.frameRate) {
+                continue;
+            }
+            if (videoThread->property("offsetX").toInt() != videoPara.offsetX) {
+                continue;
+            }
+            if (videoThread->property("offsetY").toInt() != videoPara.offsetY) {
+                continue;
+            }
+        }
+
+        videoThread->refCount++;
+        thread = videoThread;
+        break;
+    }
 
     return thread;
 }
 
-VideoThread::VideoThread(QObject *parent) : AbstractVideoThread(parent) {
+VideoThread::VideoThread(QObject* parent) : AbstractVideoThread(parent) {
     refCount = 0;
     audioIndex = -1;
     videoIndex = -1;
@@ -95,10 +96,10 @@ VideoThread::VideoThread(QObject *parent) : AbstractVideoThread(parent) {
     connectTimeout = 500;
 
     //这里要过滤下只使用了解码线程而没有对应视频控件的时候
-    videoWidget = (QWidget *) parent;
+    videoWidget = (QWidget*)parent;
     if (videoWidget) {
         while (!videoWidget->inherits("VideoWidget")) {
-            videoWidget = (QWidget *) videoWidget->parent();
+            videoWidget = (QWidget*)videoWidget->parent();
             if (!videoWidget) {
                 break;
             }
@@ -134,7 +135,8 @@ void VideoThread::run() {
             this->closeVideo();
             if (videoMode == VideoMode_Hwnd) {
                 QMetaObject::invokeMethod(this, "openVideo");
-            } else {
+            }
+            else {
                 this->openVideo();
             }
 
@@ -147,18 +149,22 @@ void VideoThread::run() {
             if (videoIndex >= 0 && videoWidth <= 0) {
                 this->readMediaInfo();
             }
-        } else if (videoCore == VideoCore_Mdk) {
+        }
+        else if (videoCore == VideoCore_Mdk) {
             //实时读取播放进度
             this->getPosition();
-        } else if (videoCore == VideoCore_HaiKang) {
+        }
+        else if (videoCore == VideoCore_HaiKang) {
             if (mediaType == MediaType_FileLocal) {
                 //本地文件需要这里实时读取播放进度
                 this->getPosition();
-            } else if (isOk && videoMode == VideoMode_Hwnd) {
+            }
+            else if (isOk && videoMode == VideoMode_Hwnd) {
                 //句柄模式下视频流如果打开正常了则sdk内部处理重连
                 this->updateTime();
             }
-        } else if (videoCore == VideoCore_EasyPlayer) {
+        }
+        else if (videoCore == VideoCore_EasyPlayer) {
             if (audioIndex < 0 && videoIndex < 0) {
                 this->readMediaInfo();
             }
@@ -192,7 +198,7 @@ void VideoThread::run() {
     debug("线程结束", "");
 }
 
-bool VideoThread::eventFilter(QObject *watched, QEvent *event) {
+bool VideoThread::eventFilter(QObject* watched, QEvent* event) {
     //对应内核中会有 installEventFilter
     //qDebug() << TIMEMS << watched << event;
     if (videoCore == VideoCore_QMedia) {
@@ -200,7 +206,8 @@ bool VideoThread::eventFilter(QObject *watched, QEvent *event) {
         if (event->type() == QEvent::LayoutRequest) {
             this->setGeometry();
         }
-    } else if (videoCore == VideoCore_EasyPlayer) {
+    }
+    else if (videoCore == VideoCore_EasyPlayer) {
         //父窗体尺寸变了需要重新设置显示视频控件的尺寸
         if (event->type() == QEvent::Resize) {
             this->setGeometry();
@@ -251,7 +258,7 @@ void VideoThread::replay() {
     }
 }
 
-void VideoThread::debug(const QString &head, const QString &msg) const {
+void VideoThread::debug(const QString& head, const QString& msg) const {
     AbstractVideoThread::debug(head, msg, mediaUrl);
 }
 
@@ -276,7 +283,7 @@ VideoCore VideoThread::getVideoCore() const {
     return this->videoCore;
 }
 
-void VideoThread::setVideoCore(const VideoCore &videoCore) {
+void VideoThread::setVideoCore(const VideoCore& videoCore) {
     this->videoCore = videoCore;
 }
 
@@ -284,7 +291,7 @@ QString VideoThread::getMediaUrl() const {
     return this->mediaUrl;
 }
 
-void VideoThread::setMediaUrl(const QString &mediaUrl) {
+void VideoThread::setMediaUrl(const QString& mediaUrl) {
     //海康大华等厂家sdk只支持rtsp和mp4
 #if 0
     if (videoCore == VideoCore_HaiKang || videoCore == VideoCore_DaHua) {
@@ -313,9 +320,11 @@ void VideoThread::checkOnlyAudio() {
     //没有视频尺寸以及mp3文件都是纯音频/可能存在封面导致有尺寸
     if (videoWidth <= 0) {
         onlyAudio = true;
-    } else if (mediaUrl.endsWith(".mp3")) {
+    }
+    else if (mediaUrl.endsWith(".mp3")) {
         onlyAudio = true;
-    } else {
+    }
+    else {
         onlyAudio = false;
     }
 
@@ -346,10 +355,12 @@ void VideoThread::checkMediaType() {
                 if (http) {
                     mediaType = MediaType_Http;
                 }
-            } else {
+            }
+            else {
                 this->checkMediaType(web);
             }
-        } else if (videoCore == VideoCore_Mpv) {
+        }
+        else if (videoCore == VideoCore_Mpv) {
             //经过测试发现实时视频流也会不断触发时长和播放进度变化
             //如果是单纯的视频文件(本地视频/网络视频)只会触发1-2次时长变化和播放进度变化
             if (playCount == 5) {
@@ -358,37 +369,45 @@ void VideoThread::checkMediaType() {
                     if (web) {
                         mediaType = MediaType_FileWeb;
                     }
-                } else {
+                }
+                else {
                     if (http) {
                         mediaType = MediaType_Http;
                     }
                 }
             }
-        } else if (videoCore == VideoCore_Mdk) {
+        }
+        else if (videoCore == VideoCore_Mdk) {
             //限定低于3s时长的为视频流
             if (duration < 3000) {
                 if (http) {
                     mediaType = MediaType_Http;
                 }
-            } else {
+            }
+            else {
                 this->checkMediaType(web);
             }
-        } else if (videoCore == VideoCore_EasyPlayer) {
+        }
+        else if (videoCore == VideoCore_EasyPlayer) {
             //经过测试发现实时视频流会发送个固定1s时长的数据
             if (duration == 1) {
                 if (http) {
                     mediaType = MediaType_Http;
                 }
-            } else {
+            }
+            else {
                 this->checkMediaType(web);
             }
-        } else {
+        }
+        else {
             this->checkMediaType(web);
         }
-    } else {
+    }
+    else {
         if (http) {
             mediaType = MediaType_Http;
-        } else if (getIsFile()) {
+        }
+        else if (getIsFile()) {
             //有一些裸流本地文件没有时长
             mediaType = MediaType_Other;
         }
@@ -403,7 +422,8 @@ void VideoThread::checkMediaType() {
 void VideoThread::checkMediaType(bool web) {
     if (web) {
         mediaType = MediaType_FileWeb;
-    } else if (QFile(mediaUrl).exists()) {
+    }
+    else if (QFile(mediaUrl).exists()) {
         mediaType = MediaType_FileLocal;
     }
 }
@@ -416,7 +436,7 @@ QString VideoThread::getBufferSize() const {
     return this->bufferSize;
 }
 
-void VideoThread::setBufferSize(const QString &bufferSize) {
+void VideoThread::setBufferSize(const QString& bufferSize) {
     this->bufferSize = bufferSize;
 }
 
@@ -424,7 +444,7 @@ DecodeType VideoThread::getDecodeType() const {
     return this->decodeType;
 }
 
-void VideoThread::setDecodeType(const DecodeType &decodeType) {
+void VideoThread::setDecodeType(const DecodeType& decodeType) {
     this->decodeType = decodeType;
 }
 
@@ -432,7 +452,7 @@ QString VideoThread::getHardware() const {
     return this->hardware;
 }
 
-void VideoThread::setHardware(const QString &hardware) {
+void VideoThread::setHardware(const QString& hardware) {
     this->hardware = hardware;
 }
 
@@ -440,7 +460,7 @@ QString VideoThread::getTransport() const {
     return this->transport;
 }
 
-void VideoThread::setTransport(const QString &transport) {
+void VideoThread::setTransport(const QString& transport) {
     this->transport = transport;
 }
 
@@ -506,7 +526,7 @@ QString VideoThread::getEncryptKey() const {
     return this->encryptKey;
 }
 
-void VideoThread::setEncryptKey(const QString &encryptKey) {
+void VideoThread::setEncryptKey(const QString& encryptKey) {
     //将原始秘钥按照MD5加密转换成最终秘钥字符串
     this->encryptKey = encryptKey;
     if (!encryptKey.isEmpty()) {
@@ -519,7 +539,7 @@ QString VideoThread::getDecryptKey() const {
     return this->decryptKey;
 }
 
-void VideoThread::setDecryptKey(const QString &decryptKey) {
+void VideoThread::setDecryptKey(const QString& decryptKey) {
     //将原始秘钥按照MD5加密转换成最终秘钥字符串
     this->decryptKey = decryptKey;
     if (!decryptKey.isEmpty()) {
@@ -533,7 +553,7 @@ void VideoThread::clearSecretKey() {
     this->setProperty("decryptKey", "");
 }
 
-void VideoThread::setSecretKey(const QString &encryptKey, const QString &decryptKey) {
+void VideoThread::setSecretKey(const QString& encryptKey, const QString& decryptKey) {
     this->setEncryptKey(encryptKey);
     this->setDecryptKey(decryptKey);
 }
@@ -571,7 +591,6 @@ void VideoThread::stopDetect() {
 }
 
 void VideoThread::readMediaInfo() {
-
 }
 
 void VideoThread::setAudioTrack(int audioTrack) {
@@ -612,7 +631,6 @@ void VideoThread::setRotate(int rotate) {
 }
 
 void VideoThread::setAspect(double width, double height) {
-
 }
 
 qint64 VideoThread::getDuration() {
@@ -632,7 +650,6 @@ double VideoThread::getSpeed() {
 }
 
 void VideoThread::setSpeed(double speed) {
-
 }
 
 int VideoThread::getVolume() {
@@ -666,7 +683,7 @@ QString VideoThread::getAudioDevice() const {
     return this->audioDevice;
 }
 
-void VideoThread::setAudioDevice(const QString &audioDevice) {
+void VideoThread::setAudioDevice(const QString& audioDevice) {
     this->audioDevice = audioDevice;
 }
 
@@ -681,7 +698,8 @@ void VideoThread::stop2() {
         //this->stop(false);
         //如果在系统非常繁忙且CPU资源很紧张的情况下/执行下面这行可能出现崩溃/找遍全宇宙原因未知/请用上面这行代码
         QMetaObject::invokeMethod(videoWidget, "stop");
-    } else {
+    }
+    else {
         this->stop(false);
     }
 }
@@ -741,7 +759,8 @@ void VideoThread::recordStartFinsh() {
     emit recorderStateChanged(RecorderState_Recording, fileName);
     if (isPush(fileName)) {
         debug("开始推流", QString("地址: %1").arg(fileName));
-    } else {
+    }
+    else {
         debug("开始录制", QString("文件: %1").arg(fileName));
     }
 }
@@ -751,8 +770,8 @@ void VideoThread::recordStopFinsh() {
     emit recorderStateChanged(RecorderState_Stopped, fileName);
     if (isPush(fileName)) {
         debug("结束推流", QString("地址: %1").arg(fileName));
-    } else {
+    }
+    else {
         debug("结束录制", QString("文件: %1").arg(fileName));
     }
 }
-
