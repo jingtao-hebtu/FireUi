@@ -287,6 +287,9 @@ public slots:
     //获取是否尝试停止线程
     bool getTryStop();
 
+    //仅清空视频缓存数据
+    void clearVideoBuffer();
+
     //清空缓存数据
     void clearBuffer(bool direct);
 

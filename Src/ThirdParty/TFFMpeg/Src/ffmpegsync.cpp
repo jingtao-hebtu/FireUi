@@ -27,8 +27,37 @@ void FFmpegSync::run() {
         }
 
         mutex.lock();
+        if (packets.isEmpty()) {
+            mutex.unlock();
+            msleep(1);
+            continue;
+        }
+
         AVPacket *packet = packets.first();
+        bool waitKeyFrame = m_waitKeyFrame;
         mutex.unlock();
+
+        bool popped = false;
+        if (streamType == StreamType_Video && waitKeyFrame) {
+            bool keyFrame = FFmpegHelper::checkPacketKey(packet);
+            if (!keyFrame) {
+                mutex.lock();
+                packets.removeFirst();
+                mutex.unlock();
+                popped = true;
+                FFmpegHelper::freePacket(packet);
+                continue;
+            }
+
+            //丢弃了关键帧之后重新等到下一个关键帧再继续解码
+            thread->clearVideoBuffer();
+
+            mutex.lock();
+            m_waitKeyFrame = false;
+            packets.removeFirst();
+            mutex.unlock();
+            popped = true;
+        }
 
         //h264的裸流文件同步有问题因为获取不到pts和dts(暂时用最蠢的延时办法解决)
         if (thread->formatName == "h264" || thread->formatName == "hevc") {
@@ -57,10 +86,12 @@ void FFmpegSync::run() {
         }
 
         //释放资源并移除
-        mutex.lock();
         FFmpegHelper::freePacket(packet);
-        packets.removeFirst();
-        mutex.unlock();
+        if (!popped) {
+            mutex.lock();
+            packets.removeFirst();
+            mutex.unlock();
+        }
     }
 
     this->reset();
@@ -82,6 +113,7 @@ void FFmpegSync::clear() {
             FFmpegHelper::freePacket(packet);
         }
     packets.clear();
+    m_waitKeyFrame = false;
     mutex.unlock();
 }
 
@@ -95,9 +127,15 @@ void FFmpegSync::reset() {
 
 void FFmpegSync::append(AVPacket *packet) {
     mutex.lock();
-    if (m_maxFrames > 0 && packets.count() >= m_maxFrames) {
+    bool droppedAnyPacket = false;
+    while (m_maxFrames > 0 && packets.count() >= m_maxFrames) {
         AVPacket *oldest = packets.takeFirst();
+        droppedAnyPacket = true;
         FFmpegHelper::freePacket(oldest);
+    }
+
+    if (streamType == StreamType_Video && droppedAnyPacket) {
+        m_waitKeyFrame = true;
     }
     packets << packet;
     mutex.unlock();
@@ -106,6 +144,11 @@ void FFmpegSync::append(AVPacket *packet) {
 void FFmpegSync::setMaxFrames(int maxFrames) {
     QMutexLocker locker(&mutex);
     m_maxFrames = maxFrames;
+}
+
+int FFmpegSync::getMaxFrames() {
+    QMutexLocker locker(&mutex);
+    return m_maxFrames;
 }
 
 int FFmpegSync::getPacketCount() {

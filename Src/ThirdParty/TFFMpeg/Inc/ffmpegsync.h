@@ -38,6 +38,8 @@ private:
     QList<AVPacket *> packets;
     //队列最大缓存帧数(<=0 表示不限制)
     int m_maxFrames = 5;
+    //是否需要等待关键帧后再继续解码
+    bool m_waitKeyFrame = false;
 
     //当前帧显示时间
     double ptsTime;
@@ -65,6 +67,9 @@ public:
 
     //设置队列最大缓存帧数
     void setMaxFrames(int maxFrames);
+
+    //获取队列最大缓存帧数
+    int getMaxFrames();
 
     //获取队列中包的数量
     int getPacketCount();

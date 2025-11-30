@@ -9,6 +9,7 @@ ELSE ()
 ENDIF ()
 
 add_definitions(-Dopenglx)
+add_definitions(-Dffmpegdevice)
 
 
 file(GLOB_RECURSE T_VIDEO_SYSTEM_SRC "${T_VIDEO_SYSTEM_DIR}/*.cpp")

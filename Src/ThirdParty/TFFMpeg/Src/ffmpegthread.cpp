@@ -210,8 +210,11 @@ bool FFmpegThread::checkRun() {
 
     //解码队列中帧数过多暂停读取(倍速越大数量也大)
     if (useSync) {
-        int max = speed * (formatName == "hls" ? 500 : 100);
-        if (videoSync->getPacketCount() >= max || audioSync->getPacketCount() >= max) {
+        int defaultMax = speed * (formatName == "hls" ? 500 : 100);
+        int videoMax = videoSync->getMaxFrames() > 0 ? videoSync->getMaxFrames() : defaultMax;
+        int audioMax = audioSync->getMaxFrames() > 0 ? audioSync->getMaxFrames() : defaultMax;
+
+        if (videoSync->getPacketCount() >= videoMax || audioSync->getPacketCount() >= audioMax) {
             this->updateTime();
             return false;
         }
@@ -1333,6 +1336,15 @@ bool FFmpegThread::getTryRead() {
 
 bool FFmpegThread::getTryStop() {
     return this->stopped;
+}
+
+void FFmpegThread::clearVideoBuffer() {
+    if (videoCodecCtx) {
+        avcodec_flush_buffers(videoCodecCtx);
+    }
+
+    // 强制等待下一帧关键帧，避免在丢帧后继续用残缺的解码上下文渲染
+    keyFrame = false;
 }
 
 void FFmpegThread::clearBuffer(bool direct) {

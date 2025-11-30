@@ -22,7 +22,7 @@ if (WIN32)
 
     link_directories(${T_FFMPEG_DIR}/Lib/ffmpeg7/libwin64)
 
-    set(T_FFMPEG_LIBS avformat avfilter avcodec swresample swscale avutil)
+    set(T_FFMPEG_LIBS avformat avfilter avcodec swresample swscale avutil avdevice postproc opengl32 GLU32)
 elseif (UNIX)
     add_definitions(-Dffmpeg)
     add_definitions(-Dffmpeg6)
@@ -39,7 +39,7 @@ elseif (UNIX)
     pkg_check_modules(AVUTIL REQUIRED IMPORTED_TARGET libavutil)
     pkg_check_modules(SWSCALE REQUIRED IMPORTED_TARGET libswscale)
     pkg_check_modules(SWRESAMPLE REQUIRED IMPORTED_TARGET libswresample)
-    set(T_FFMPEG_LIBS avformat avfilter avcodec swresample swscale avutil)
+    set(T_FFMPEG_LIBS avformat avfilter avcodec swresample swscale avutil avdevice postproc)
 
 endif ()
 
