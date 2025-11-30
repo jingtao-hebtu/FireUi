@@ -82,6 +82,8 @@ void TF::FuVideoPage::initVideo() {
 
     const bool jetsonPlatform = isJetsonPlatform();
     const QString defaultHardware = (jetsonPlatform ? QStringLiteral("nvdec") : QStringLiteral("auto"));
+    const bool configuredLowLatency = GET_BOOL_CONFIG("LowLatencyMode");
+    const bool lowLatencyMode = (jetsonPlatform ? true : configuredLowLatency);
 
     WidgetPara widgetPara = mVideoWid->getWidgetPara();
     //widgetPara.borderWidth = 5;
@@ -103,6 +105,7 @@ void TF::FuVideoPage::initVideo() {
     videoPara.playRepeat = false;
     videoPara.readTimeout = 0;
     videoPara.connectTimeout = 1000;
+    videoPara.lowLatencyMode = lowLatencyMode;
     mGpuVideoPara = videoPara;
     mCpuVideoPara = videoPara;
     mCpuVideoPara.decodeType = DecodeType_Full;

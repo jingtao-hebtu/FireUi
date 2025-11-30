@@ -84,6 +84,7 @@ VideoThread::VideoThread(QObject *parent) : AbstractVideoThread(parent) {
     playRepeat = false;
     playStep = false;
     realBitRate = false;
+    lowLatencyMode = false;
 
     encryptKey = "";
     decryptKey = "";
@@ -491,6 +492,14 @@ bool VideoThread::getRealBitRate() const {
 
 void VideoThread::setRealBitRate(bool realBitRate) {
     this->realBitRate = realBitRate;
+}
+
+bool VideoThread::getLowLatencyMode() const {
+    return this->lowLatencyMode;
+}
+
+void VideoThread::setLowLatencyMode(bool lowLatencyMode) {
+    this->lowLatencyMode = lowLatencyMode;
 }
 
 QString VideoThread::getEncryptKey() const {

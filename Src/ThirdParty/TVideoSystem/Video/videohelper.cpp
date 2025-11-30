@@ -480,6 +480,7 @@ void VideoHelper::initVideoThread(VideoThread *videoThread, const VideoPara &vid
     videoThread->setPlayRepeat(videoPara.playRepeat);
     videoThread->setPlayStep(videoPara.playStep);
     videoThread->setRealBitRate(videoPara.realBitRate);
+    videoThread->setLowLatencyMode(videoPara.lowLatencyMode);
 
     videoThread->setEncryptKey(videoPara.encryptKey);
     videoThread->setDecryptKey(videoPara.decryptKey);

@@ -40,6 +40,8 @@ private:
     int m_maxFrames = 5;
     //是否需要等待关键帧后再继续解码
     bool m_waitKeyFrame = false;
+    //低延迟模式(丢弃积压帧)
+    bool m_lowLatencyMode = false;
 
     //当前帧显示时间
     double ptsTime;
@@ -70,6 +72,9 @@ public:
 
     //获取队列最大缓存帧数
     int getMaxFrames();
+
+    //设置低延迟模式
+    void setLowLatencyMode(bool lowLatencyMode);
 
     //获取队列中包的数量
     int getPacketCount();

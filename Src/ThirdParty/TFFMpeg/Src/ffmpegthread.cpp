@@ -1191,6 +1191,12 @@ bool FFmpegThread::openVideo() {
     //初始化滤镜
     this->initFilter();
 
+    //低延迟播放配置
+    const int lowLatencyMaxFrames = 3;
+    videoSync->setLowLatencyMode(lowLatencyMode);
+    videoSync->setMaxFrames(lowLatencyMode ? lowLatencyMaxFrames : 5);
+    audioSync->setLowLatencyMode(false);
+
     //校验同步标志位
     FFmpegThreadHelper::checkUseSync(this, videoIndex, audioIndex, useSync);
 
