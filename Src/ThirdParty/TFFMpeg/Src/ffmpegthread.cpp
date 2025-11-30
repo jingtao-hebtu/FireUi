@@ -10,6 +10,15 @@
 
 #include "audioplayer.h"
 
+#include <QSysInfo>
+
+namespace {
+bool isArm64() {
+    const QString arch = QSysInfo::currentCpuArchitecture().toLower();
+    return arch.contains("aarch64") || arch.contains("arm64");
+}
+}
+
 
 
 FFmpegThread::FFmpegThread(QObject *parent) : VideoThread(parent) {
@@ -108,6 +117,46 @@ FFmpegThread::~FFmpegThread() {
 
 void FFmpegThread::initAvio() {
     FFmpegAvio::init(&avio, mediaUrl, flag, mediaType);
+}
+
+bool FFmpegThread::isJetsonPlatform() const {
+#if defined(Q_OS_LINUX)
+    if (!isArm64()) {
+        return false;
+    }
+
+    const QString product = QSysInfo::prettyProductName().toLower();
+    const QString machine = QSysInfo::machineHostName().toLower();
+    return product.contains("jetson") || machine.contains("jetson") || qEnvironmentVariableIsSet("JETSON_PLATFORM");
+#else
+    return false;
+#endif
+}
+
+QString FFmpegThread::preferredHardwareForPlatform(const QString &currentHardware) const {
+    if (!isJetsonPlatform()) {
+        return currentHardware;
+    }
+
+    if (!currentHardware.isEmpty() && currentHardware != "auto" && currentHardware != "none") {
+        return currentHardware;
+    }
+
+    const QString envHardware = qEnvironmentVariable("JETSON_HW_DECODER").toLower();
+    if (!envHardware.isEmpty()) {
+        return envHardware;
+    }
+
+    return "nvdec";
+}
+
+void FFmpegThread::logHardwareFallback(const QString &reason, const QString &previousHardware, const QString &newHardware) const {
+    QString msg = QString("原因: %1 原硬件: %2 新硬件: %3 平台: %4")
+                      .arg(reason)
+                      .arg(previousHardware)
+                      .arg(newHardware)
+                      .arg(isJetsonPlatform() ? "Jetson" : "Other");
+    debug(0, "硬解降级", msg);
 }
 
 void FFmpegThread::run() {
@@ -770,6 +819,9 @@ bool FFmpegThread::initVideo() {
         int result = -1;
         AVStream *videoStream = formatCtx->streams[videoIndex];
 
+        //Jetson平台上尽可能指定明确的硬件解码后端
+        hardware = preferredHardwareForPlatform(hardware);
+
         //如果主动设置过旋转角度则将旋转信息设置到流信息中以便保存那边也应用(不需要保存也旋转可以注释)
         if (rotate != -1) {
             FFmpegHelper::setRotate(videoStream, rotate);
@@ -778,7 +830,12 @@ bool FFmpegThread::initVideo() {
         //先获取旋转角度(如果有旋转角度则不能用硬件加速)
         this->getRotate();
         if (rotate != 0) {
-            hardware = "none";
+            if (isJetsonPlatform()) {
+                debug(0, "硬解旋转保留", QString("角度: %1 硬件: %2").arg(rotate).arg(hardware));
+            } else {
+                logHardwareFallback("存在旋转角度", hardware, "none");
+                hardware = "none";
+            }
         }
 
         //查找视频解码器(如果上面av_find_best_stream第五个参数传了则这里不需要)
@@ -807,6 +864,7 @@ bool FFmpegThread::initVideo() {
 
         //初始化硬件加速(也可以叫硬解码/如果当前格式不支持硬解则立即切换到软解码)
         if (hardware != "none" && !FFmpegThreadHelper::initHardware(this, videoCodec, videoCodecCtx, hardware)) {
+            logHardwareFallback("初始化硬解失败", hardware, "none");
             hardware = "none";
             videoCodec = avcodec_find_decoder(codecId);
         }

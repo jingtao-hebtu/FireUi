@@ -155,6 +155,11 @@ private:
     //读取并清空(视频流暂停期间)
     void readAndClear();
 
+    //平台能力
+    bool isJetsonPlatform() const;
+    QString preferredHardwareForPlatform(const QString &currentHardware) const;
+    void logHardwareFallback(const QString &reason, const QString &previousHardware, const QString &newHardware) const;
+
     //重新播放(循环播放)
     void replay();
 
