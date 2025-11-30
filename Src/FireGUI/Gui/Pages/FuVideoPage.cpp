@@ -99,7 +99,7 @@ void TF::FuVideoPage::initVideo() {
 
     VideoPara videoPara = mVideoWid->getVideoPara();
     videoPara.videoCore = VideoHelper::getVideoCore();
-    videoPara.decodeType = DecodeType_Fast;
+    videoPara.decodeType = DecodeType_Even;
     videoPara.hardware = defaultHardware;
     videoPara.transport = "tcp";
     videoPara.playRepeat = false;
@@ -108,10 +108,9 @@ void TF::FuVideoPage::initVideo() {
     videoPara.lowLatencyMode = lowLatencyMode;
     videoPara.decodeAudio = false;
     videoPara.playAudio = false;
-    videoPara.decodeType = DecodeType_Fast;
     mGpuVideoPara = videoPara;
     mCpuVideoPara = videoPara;
-    mCpuVideoPara.decodeType = DecodeType_Fast;
+    mCpuVideoPara.decodeType = DecodeType_Even;
     mCpuVideoPara.hardware = (jetsonPlatform ? defaultHardware : QStringLiteral("none"));
     mVideoWid->setVideoPara(mGpuVideoPara);
 }

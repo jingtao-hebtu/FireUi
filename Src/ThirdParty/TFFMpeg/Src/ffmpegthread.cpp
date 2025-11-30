@@ -550,10 +550,12 @@ void FFmpegThread::decodeVideo1(AVPacket *packet) {
         FFmpegThreadHelper::decode(this, videoCodecCtx, packet, tempFrame, videoFrame);
     }
 
+    /*
     m_decodedVideoFrames++;
     if (m_decodedVideoFrames % m_logDecodeInterval == 0) {
         logDecodeStatus();
     }
+    */
 }
 
 void FFmpegThread::decodeVideo2(AVPacket *packet) {
@@ -936,11 +938,15 @@ bool FFmpegThread::initVideo() {
         }
 
         //打开视频解码器
-        result = avcodec_open2(videoCodecCtx, videoCodec, NULL);
+        result = avcodec_open2(videoCodecCtx, videoCodec, &options);
         if (result < 0) {
             debug(result, "打开视解", "");
             return false;
         }
+
+        qDebug() << "Decoder" << videoCodecCtx->codec->name
+         << "thread_count=" << videoCodecCtx->thread_count
+         << "thread_type=" << videoCodecCtx->thread_type;
 
         if (videoCodecCtx->pix_fmt == AV_PIX_FMT_NONE) {
             debug(0, "格式为空", "");
