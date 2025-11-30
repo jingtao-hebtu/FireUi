@@ -67,6 +67,7 @@ struct VideoPara {
     bool playRepeat;            //重复循环播放
     bool playStep;              //是否逐帧播放
     bool realBitRate;           //统计实时码率
+    bool lowLatencyMode;        //低延迟模式(主动丢帧)
 
     QString encryptKey;         //加密秘钥字串
     QString decryptKey;         //解密秘钥字串
@@ -96,6 +97,7 @@ struct VideoPara {
         playRepeat = false;
         playStep = false;
         realBitRate = false;
+        lowLatencyMode = false;
 
         encryptKey = "";
         decryptKey = "";

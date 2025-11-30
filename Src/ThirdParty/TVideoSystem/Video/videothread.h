@@ -91,6 +91,8 @@ protected:
     bool playStep;
     //统计实时码率
     bool realBitRate;
+    //低延迟模式
+    bool lowLatencyMode;
 
     //加密秘钥字串
     QString encryptKey;
@@ -199,6 +201,11 @@ public:
     bool getRealBitRate() const;
 
     virtual void setRealBitRate(bool realBitRate);
+
+    //获取和设置低延迟模式
+    bool getLowLatencyMode() const;
+
+    void setLowLatencyMode(bool lowLatencyMode);
 
     //获取和设置加密秘钥字串
     QString getEncryptKey() const;

@@ -33,6 +33,23 @@ void FFmpegSync::run() {
             continue;
         }
 
+        if (m_lowLatencyMode && packets.count() > 1) {
+            int dropCount = 0;
+            while (packets.count() > 1) {
+                AVPacket *dropped = packets.takeFirst();
+                dropCount++;
+                FFmpegHelper::freePacket(dropped);
+            }
+
+            if (dropCount > 0) {
+                if (streamType == StreamType_Video) {
+                    m_waitKeyFrame = true;
+                }
+                thread->debug(0, "丢帧", QString("lowLatency:%1 queue:%2 drop:%3 reason:take_overflow").arg(m_lowLatencyMode)
+                              .arg(packets.count()).arg(dropCount));
+            }
+        }
+
         AVPacket *packet = packets.first();
         bool waitKeyFrame = m_waitKeyFrame;
         mutex.unlock();
@@ -127,15 +144,19 @@ void FFmpegSync::reset() {
 
 void FFmpegSync::append(AVPacket *packet) {
     mutex.lock();
-    bool droppedAnyPacket = false;
+    int dropCount = 0;
     while (m_maxFrames > 0 && packets.count() >= m_maxFrames) {
         AVPacket *oldest = packets.takeFirst();
-        droppedAnyPacket = true;
+        dropCount++;
         FFmpegHelper::freePacket(oldest);
     }
 
-    if (streamType == StreamType_Video && droppedAnyPacket) {
-        m_waitKeyFrame = true;
+    if (dropCount > 0) {
+        if (streamType == StreamType_Video) {
+            m_waitKeyFrame = true;
+        }
+        thread->debug(0, "丢帧", QString("lowLatency:%1 queue:%2 drop:%3 reason:append_overflow").arg(m_lowLatencyMode)
+                      .arg(packets.count()).arg(dropCount));
     }
     packets << packet;
     mutex.unlock();
@@ -149,6 +170,11 @@ void FFmpegSync::setMaxFrames(int maxFrames) {
 int FFmpegSync::getMaxFrames() {
     QMutexLocker locker(&mutex);
     return m_maxFrames;
+}
+
+void FFmpegSync::setLowLatencyMode(bool lowLatencyMode) {
+    QMutexLocker locker(&mutex);
+    m_lowLatencyMode = lowLatencyMode;
 }
 
 int FFmpegSync::getPacketCount() {
