@@ -3,6 +3,7 @@
 
 #include <QThread>
 #include <QMutex>
+#include <QString>
 
 class FFmpegThread;
 
@@ -42,6 +43,12 @@ private:
     bool m_waitKeyFrame = false;
     //低延迟模式(丢弃积压帧)
     bool m_lowLatencyMode = false;
+    //打印日志的帧间隔
+    int m_logInterval = 90;
+    //累计处理的帧数
+    qint64 m_processedCount = 0;
+    //累计丢弃的帧数
+    qint64 m_totalDroppedFrames = 0;
 
     //当前帧显示时间
     double ptsTime;
@@ -79,11 +86,17 @@ public:
     //获取队列中包的数量
     int getPacketCount();
 
+    //获取累计丢弃的帧数
+    qint64 getTotalDroppedFrames();
+
     //计算pts时间
     bool checkPtsTime();
 
     //校验显示时间
     void checkShowTime();
+
+    //打印队列状态
+    void logQueueState(const QString &reason, int currentSize);
 
 signals:
 

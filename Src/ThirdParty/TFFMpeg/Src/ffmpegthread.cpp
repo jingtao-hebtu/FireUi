@@ -11,6 +11,7 @@
 #include "audioplayer.h"
 
 #include <QSysInfo>
+#include <QThread>
 
 namespace {
 bool isArm64() {
@@ -163,6 +164,7 @@ void FFmpegThread::logHardwareFallback(const QString &reason, const QString &pre
 
 void FFmpegThread::run() {
     this->checkData();
+    m_decodedVideoFrames = 0;
     while (!stopped) {
         if (!isOk) {
             //记住开始解码的时间用于用音视频同步等
@@ -373,6 +375,19 @@ void FFmpegThread::logSwsScaleUsage() {
     }
 }
 
+void FFmpegThread::logDecodeStatus() {
+    const QString threadName = (objectName().isEmpty() ? QStringLiteral("FFmpegThread") : objectName());
+    const qint64 queueSize = (videoSync ? videoSync->getPacketCount() : 0);
+    const qint64 dropped = (videoSync ? videoSync->getTotalDroppedFrames() : 0);
+    const QString msg = QString("thread=%1 hardware=%2 decodedFrames=%3 queue=%4 dropped=%5")
+                            .arg(threadName)
+                            .arg(hardware)
+                            .arg(m_decodedVideoFrames)
+                            .arg(queueSize)
+                            .arg(dropped);
+    debug(0, QStringLiteral("FFmpegThread"), msg);
+}
+
 bool FFmpegThread::scaleAndSaveVideo(bool &needScale, AVFrame *frame) {
     if (!checkFrameSize(frame)) {
         return false;
@@ -533,6 +548,11 @@ void FFmpegThread::decodeVideo1(AVPacket *packet) {
         FFmpegThreadHelper::decode(this, videoCodecCtx, packet, videoFrame, true);
     } else {
         FFmpegThreadHelper::decode(this, videoCodecCtx, packet, tempFrame, videoFrame);
+    }
+
+    m_decodedVideoFrames++;
+    if (m_decodedVideoFrames % m_logInterval == 0) {
+        logDecodeStatus();
     }
 }
 

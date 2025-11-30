@@ -45,6 +45,7 @@ void FFmpegSync::run() {
                 if (streamType == StreamType_Video) {
                     m_waitKeyFrame = true;
                 }
+                m_totalDroppedFrames += dropCount;
                 thread->debug(0, "丢帧", QString("lowLatency:%1 queue:%2 drop:%3 reason:take_overflow").arg(m_lowLatencyMode)
                               .arg(packets.count()).arg(dropCount));
             }
@@ -107,7 +108,12 @@ void FFmpegSync::run() {
         if (!popped) {
             mutex.lock();
             packets.removeFirst();
+            const int queueSize = packets.count();
             mutex.unlock();
+            m_processedCount++;
+            if (m_processedCount % m_logInterval == 0) {
+                logQueueState(QStringLiteral("take"), queueSize);
+            }
         }
     }
 
@@ -140,6 +146,8 @@ void FFmpegSync::reset() {
     bufferTime = 0;
     offsetTime = -1;
     startTime = av_gettime();
+    m_processedCount = 0;
+    m_totalDroppedFrames = 0;
 }
 
 void FFmpegSync::append(AVPacket *packet) {
@@ -155,6 +163,7 @@ void FFmpegSync::append(AVPacket *packet) {
         if (streamType == StreamType_Video) {
             m_waitKeyFrame = true;
         }
+        m_totalDroppedFrames += dropCount;
         thread->debug(0, "丢帧", QString("lowLatency:%1 queue:%2 drop:%3 reason:append_overflow").arg(m_lowLatencyMode)
                       .arg(packets.count()).arg(dropCount));
     }
@@ -179,6 +188,11 @@ void FFmpegSync::setLowLatencyMode(bool lowLatencyMode) {
 
 int FFmpegSync::getPacketCount() {
     return this->packets.count();
+}
+
+qint64 FFmpegSync::getTotalDroppedFrames() {
+    QMutexLocker locker(&mutex);
+    return m_totalDroppedFrames;
 }
 
 bool FFmpegSync::checkPtsTime() {
@@ -229,4 +243,22 @@ void FFmpegSync::checkShowTime() {
         thread->position = ptsTime / 1000;
         emit receivePosition(thread->position);
     }
+}
+
+void FFmpegSync::logQueueState(const QString &reason, int currentSize) {
+    if (!thread) {
+        return;
+    }
+
+    const QString streamName = (streamType == StreamType_Video ? QStringLiteral("video") : QStringLiteral("audio"));
+    const QString threadName = (objectName().isEmpty() ? QStringLiteral("FFmpegSync") : objectName());
+    const QString msg =
+        QString("thread=%1 stream=%2 reason=%3 queue size=%4 (max=%5) dropped=%6")
+            .arg(threadName)
+            .arg(streamName)
+            .arg(reason)
+            .arg(currentSize)
+            .arg(m_maxFrames)
+            .arg(m_totalDroppedFrames);
+    thread->debug(0, QStringLiteral("FFmpegSync"), msg);
 }
