@@ -350,7 +350,7 @@ void AbstractVideoThread::setFlag(const QString &flag) {
 #endif
 }
 
-void AbstractVideoThread::debug(const QString &head, const QString &msg, const QString &url) {
+void AbstractVideoThread::debug(const QString &head, const QString &msg, const QString &url) const {
     if (debugInfo == 0) {
         return;
     }

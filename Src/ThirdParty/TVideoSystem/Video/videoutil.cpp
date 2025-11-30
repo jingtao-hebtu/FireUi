@@ -532,7 +532,8 @@ QStringList VideoUtil::getHardware(const VideoCore &videoCore) {
 #elif defined(Q_OS_ANDROID)
     list << "mediacodec";
 #elif defined(Q_OS_LINUX)
-    list << "vaapi" << "vdpau" << "rkmpp";
+    //list << "vaapi" << "vdpau" << "rkmpp";
+    list << "nvdec" << "cuda" << "vaapi" << "vdpau" << "rkmpp";
 #elif defined(Q_OS_MAC)
     list << "videotoolbox";
 #endif
@@ -552,6 +553,19 @@ void VideoUtil::loadHardware(QComboBox *cbox, const VideoCore &videoCore, QStrin
 
     //设置默认值
     int index = hardwares.indexOf(hardware);
+
+        //如果当前配置为 none 并且存在可用的硬件解码优先项，则自动切换到优先项
+    if (index < 0 || index == 0) {
+        const QStringList preferHardwares = {"nvdec", "cuda", "vaapi", "vdpau"};
+        for (const QString &preferHardware : preferHardwares) {
+            int preferIndex = hardwares.indexOf(preferHardware);
+            if (preferIndex > 0) {
+                index = preferIndex;
+                break;
+            }
+        }
+    }
+
     cbox->setCurrentIndex(index < 0 ? 0 : index);
     hardware = cbox->currentText();
 

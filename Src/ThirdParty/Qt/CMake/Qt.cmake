@@ -4,8 +4,8 @@
 
 if(UNIX)
     set(Qt6_Version "6.9.3")
-    set(Qt6_Base_DIR "/home/tao/software/Qt/${Qt6_Version}/gcc_64")
-    set(Qt6_DIR "/home/tao/software/Qt/${Qt6_Version}/gcc_64")
+    #set(Qt6_Base_DIR "/home/tao/software/Qt/${Qt6_Version}/gcc_64")
+    #set(Qt6_DIR "/home/tao/software/Qt/${Qt6_Version}/gcc_64")
 elseif(WIN32)
     set(Qt6_Version "6.9.1")
     set(Qt6_Base_DIR "D:/Software/Qt/${Qt6_Version}/msvc2022_64")

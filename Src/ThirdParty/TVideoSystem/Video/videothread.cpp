@@ -250,7 +250,7 @@ void VideoThread::replay() {
     }
 }
 
-void VideoThread::debug(const QString &head, const QString &msg) {
+void VideoThread::debug(const QString &head, const QString &msg) const {
     AbstractVideoThread::debug(head, msg, mediaUrl);
 }
 

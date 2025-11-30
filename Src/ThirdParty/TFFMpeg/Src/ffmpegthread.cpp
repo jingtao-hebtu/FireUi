@@ -1579,7 +1579,7 @@ void FFmpegThread::setFlag(const QString &flag) {
     audioPlayer->setObjectName("audioPlayer_" + flag);
 }
 
-void FFmpegThread::debug(int result, const QString &head, const QString &msg) {
+void FFmpegThread::debug(int result, const QString &head, const QString &msg) const {
     if (result < 0) {
         QString text = (msg.isEmpty() ? "" : (" " + msg));
         VideoThread::debug(head, QString("错误: %1%2").arg(FFmpegHelper::getError(result)).arg(text));

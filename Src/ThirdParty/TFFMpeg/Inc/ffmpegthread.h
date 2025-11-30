@@ -346,7 +346,7 @@ public slots:
     void setFlag(const QString &flag);
 
     //打印信息
-    void debug(int result, const QString &head, const QString &msg);
+    void debug(int result, const QString &head, const QString &msg) const;
 
 public slots:
 

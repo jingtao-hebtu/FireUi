@@ -111,7 +111,7 @@ protected:
 
 public:
     //统一格式打印信息
-    void debug(const QString &head, const QString &msg);
+    void debug(const QString &head, const QString &msg) const;
 
     //事件回调那边主动设置获取到的值
     qint64 getDuration2() const;

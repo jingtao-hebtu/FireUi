@@ -269,7 +269,7 @@ public slots:
     virtual void setFlag(const QString &flag);
 
     //统一格式打印信息
-    void debug(const QString &head, const QString &msg, const QString &url);
+    void debug(const QString &head, const QString &msg, const QString &url) const;
 
     //主动设置图片(一般事件回调中设置)
     void setImage(const QImage &image);
