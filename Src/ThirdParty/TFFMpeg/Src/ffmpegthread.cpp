@@ -476,15 +476,41 @@ void FFmpegThread::checkAndShowVideo(bool needScale, AVFrame *frame) {
 
     //qDebug() << TIMEMS << videoWidth << videoHeight << frame->width << frame->height << frame->linesize[0] << frame->linesize[1] << frame->linesize[2];
     if (hardware == "none") {
+        AVFrame *src = needScale ? yuvFrame : frame;
+
+        YuvFrameData f;
+        f.width = src->width;
+        f.height = src->height;
+        f.strideY = src->linesize[0];
+        f.strideU = src->linesize[1];
+        f.strideV = src->linesize[2];
+
+        const int h = f.height;
+        const int ySize = int(f.strideY) * h;
+        const int uSize = int(f.strideU) * (h / 2);
+        const int vSize = int(f.strideV) * (h / 2);
+
+        f.planeY.resize(ySize);
+        f.planeU.resize(uSize);
+        f.planeV.resize(vSize);
+
+        memcpy(f.planeY.data(), src->data[0], ySize);
+        memcpy(f.planeU.data(), src->data[1], uSize);
+        memcpy(f.planeV.data(), src->data[2], vSize);
+
+        // emit receiveFrame(src->width, src->height,
+        //                   src->data[0], src->data[1], src->data[2],
+        //                   src->linesize[0], src->linesize[1], src->linesize[2]);
+
+        emit receiveYuvFrame(f);
+
         if (needScale) {
-            emit receiveFrame(videoWidth, videoHeight, yuvFrame->data[0], yuvFrame->data[1], yuvFrame->data[2],
-                              videoWidth, videoWidth / 2, videoWidth / 2);
             this->writeVideoData(videoWidth, videoHeight, yuvFrame->data[0], yuvFrame->data[1], yuvFrame->data[2]);
         } else {
-            emit receiveFrame(frame->width, frame->height, frame->data[0], frame->data[1], frame->data[2],
-                              frame->linesize[0], frame->linesize[1], frame->linesize[2]);
             this->writeVideoData(frame->linesize[0], frame->height, frame->data[0], frame->data[1], frame->data[2]);
         }
+
+        return;
     } else {
         emit receiveFrame(videoWidth, videoHeight, frame->data[0], frame->data[1], frame->linesize[0],
                           frame->linesize[1]);
@@ -916,6 +942,10 @@ bool FFmpegThread::initVideo() {
         if (result < 0) {
             debug(result, "视频参数", "");
             return false;
+        }
+
+        if (videoCodecCtx->thread_count != 4 && videoCodecCtx->thread_count != 8) {
+            videoCodecCtx->thread_count = (videoCodecCtx->thread_count > 4) ? 8 : 4;
         }
 
         //初始化硬件加速(也可以叫硬解码/如果当前格式不支持硬解则立即切换到软解码)
