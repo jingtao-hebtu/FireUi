@@ -9,12 +9,16 @@
    Brief  :
 **************************************************************************/
 #include <QApplication>
+#include <QMetaType>
 #include "AppMonitor.h"
 #include "FuMainWid.h"
+#include "yuvframedata.h"
 
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
+
+    qRegisterMetaType<YuvFrameData>("YuvFrameData");
 
     TF::AppMonitor::initApp(argc, argv);
 
