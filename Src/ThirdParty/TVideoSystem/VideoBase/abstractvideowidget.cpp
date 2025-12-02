@@ -3,6 +3,7 @@
 #include "bannerwidget.h"
 
 #include <QSysInfo>
+#include <cstring>
 
 namespace {
 bool isJetsonPlatform() {
@@ -967,6 +968,20 @@ void AbstractVideoWidget::receiveFrame(int width, int height, quint8 *dataRGB, i
 #endif
 }
 
+void AbstractVideoWidget::receiveYuvFrame(const YuvFrameData &frame)
+{
+#ifdef openglx
+    if (!image.isNull()) {
+        image = QImage();
+        update();
+    }
+    if (sender()) {
+        ensureOpenGLVisible();
+        yuvWidget->updateFrame(frame);
+    }
+#endif
+}
+
 void
 AbstractVideoWidget::receiveFrame(int width, int height, quint8 *dataY, quint8 *dataU, quint8 *dataV, quint32 linesizeY,
                                   quint32 linesizeU, quint32 linesizeV) {
@@ -978,7 +993,26 @@ AbstractVideoWidget::receiveFrame(int width, int height, quint8 *dataY, quint8 *
     }
     if (sender()) {
         ensureOpenGLVisible();
-        yuvWidget->updateFrame(width, height, dataY, dataU, dataV, linesizeY, linesizeU, linesizeV);
+        YuvFrameData frame;
+        frame.width = width;
+        frame.height = height;
+        frame.strideY = linesizeY;
+        frame.strideU = linesizeU;
+        frame.strideV = linesizeV;
+
+        const int ySize = int(frame.strideY) * frame.height;
+        const int uSize = int(frame.strideU) * (frame.height / 2);
+        const int vSize = int(frame.strideV) * (frame.height / 2);
+
+        frame.planeY.resize(ySize);
+        frame.planeU.resize(uSize);
+        frame.planeV.resize(vSize);
+
+        memcpy(frame.planeY.data(), dataY, ySize);
+        memcpy(frame.planeU.data(), dataU, uSize);
+        memcpy(frame.planeV.data(), dataV, vSize);
+
+        yuvWidget->updateFrame(frame);
     }
 #endif
 }

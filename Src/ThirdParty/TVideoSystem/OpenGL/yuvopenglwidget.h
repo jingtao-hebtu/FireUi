@@ -7,6 +7,7 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLBuffer>
 #include <QOpenGLShaderProgram>
+#include "yuvframedata.h"
 
 class YuvWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -25,6 +26,7 @@ public slots:
     //更新纹理数据
     void updateTextures(quint8 *dataY, quint8 *dataU, quint8 *dataV, quint32 linesizeY, quint32 linesizeU, quint32 linesizeV);
     //统一一个函数
+    void updateFrame(const YuvFrameData &frame);
     void updateFrame(int width, int height, quint8 *dataY, quint8 *dataU, quint8 *dataV, quint32 linesizeY, quint32 linesizeU, quint32 linesizeV);
 
 protected:
@@ -48,6 +50,7 @@ private:
     quint8 *dataY, *dataU, *dataV;
     //YUV数据尺寸
     quint32 linesizeY, linesizeU, linesizeV;
+    YuvFrameData frameData;
     //顶点着色器代码+片段着色器代码
     QString shaderVert, shaderFrag;
 

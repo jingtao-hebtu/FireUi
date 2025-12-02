@@ -7,6 +7,8 @@
 #include "Detector/DetectionQueueManager.h"
 #include "Detector/DetectorWorkerManager.h"
 
+#include <cstring>
+
 
 VideoWidget::VideoWidget(QWidget *parent) : AbstractVideoWidget(parent) {
     videoWidth = 0;
@@ -459,11 +461,41 @@ void VideoWidget::receiveFrame(int width, int height, quint8 *dataRGB, int type)
     }
 }
 
+void VideoWidget::receiveYuvFrame(const YuvFrameData &frame)
+{
+    if (!this->checkReceive()) {
+        return;
+    }
+
+    AbstractVideoWidget::receiveYuvFrame(frame);
+}
+
 void VideoWidget::receiveFrame(int width, int height, quint8 *dataY, quint8 *dataU, quint8 *dataV, quint32 linesizeY,
                                quint32 linesizeU, quint32 linesizeV) {
-    if (this->checkReceive()) {
-        AbstractVideoWidget::receiveFrame(width, height, dataY, dataU, dataV, linesizeY, linesizeU, linesizeV);
+    if (!this->checkReceive()) {
+        return;
     }
+
+    YuvFrameData frame;
+    frame.width = width;
+    frame.height = height;
+    frame.strideY = linesizeY;
+    frame.strideU = linesizeU;
+    frame.strideV = linesizeV;
+
+    const int ySize = int(frame.strideY) * frame.height;
+    const int uSize = int(frame.strideU) * (frame.height / 2);
+    const int vSize = int(frame.strideV) * (frame.height / 2);
+
+    frame.planeY.resize(ySize);
+    frame.planeU.resize(uSize);
+    frame.planeV.resize(vSize);
+
+    memcpy(frame.planeY.data(), dataY, ySize);
+    memcpy(frame.planeU.data(), dataU, uSize);
+    memcpy(frame.planeV.data(), dataV, vSize);
+
+    receiveYuvFrame(frame);
 }
 
 void

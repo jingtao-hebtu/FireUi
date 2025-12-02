@@ -82,6 +82,16 @@ void YuvWidget::updateTextures(quint8 *dataY, quint8 *dataU, quint8 *dataV, quin
     this->update();
 }
 
+void YuvWidget::updateFrame(const YuvFrameData &frame)
+{
+    frameData = frame;
+    this->setFrameSize(frameData.width, frameData.height);
+    updateTextures(reinterpret_cast<quint8 *>(frameData.planeY.data()),
+                  reinterpret_cast<quint8 *>(frameData.planeU.data()),
+                  reinterpret_cast<quint8 *>(frameData.planeV.data()),
+                  frameData.strideY, frameData.strideU, frameData.strideV);
+}
+
 void YuvWidget::updateFrame(int width, int height, quint8 *dataY, quint8 *dataU, quint8 *dataV, quint32 linesizeY, quint32 linesizeU, quint32 linesizeV)
 {
     this->setFrameSize(width, height);
