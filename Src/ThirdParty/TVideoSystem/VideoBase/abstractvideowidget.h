@@ -2,6 +2,7 @@
 #define ABSTRACTVIDEOWIDGET_H
 
 #include "widgethead.h"
+#include "yuvframedata.h"
 
 class RgbWidget;
 
@@ -337,6 +338,7 @@ protected slots:
 
     //接收一帧图片并绘制
     void receiveFrame(int width, int height, quint8 *dataRGB, int type);
+    void receiveYuvFrame(const YuvFrameData &frame);
 
     void receiveFrame(int width, int height, quint8 *dataY, quint8 *dataU, quint8 *dataV, quint32 linesizeY,
                       quint32 linesizeU, quint32 linesizeV);

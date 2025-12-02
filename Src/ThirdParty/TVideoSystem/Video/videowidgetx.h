@@ -3,6 +3,7 @@
 
 #include "videothread.h"
 #include "abstractvideowidget.h"
+#include "yuvframedata.h"
 
 class VideoWidget : public AbstractVideoWidget {
 Q_OBJECT
@@ -120,6 +121,8 @@ private slots:
 
     //接收一帧并绘制
     void receiveFrame(int width, int height, quint8 *dataRGB, int type);
+
+    void receiveYuvFrame(const YuvFrameData &frame);
 
     void receiveFrame(int width, int height, quint8 *dataY, quint8 *dataU, quint8 *dataV, quint32 linesizeY,
                       quint32 linesizeU, quint32 linesizeV);
