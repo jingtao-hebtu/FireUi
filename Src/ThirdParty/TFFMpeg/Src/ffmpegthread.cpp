@@ -944,10 +944,6 @@ bool FFmpegThread::initVideo() {
             return false;
         }
 
-        if (videoCodecCtx->thread_count != 4 && videoCodecCtx->thread_count != 8) {
-            videoCodecCtx->thread_count = (videoCodecCtx->thread_count > 4) ? 8 : 4;
-        }
-
         //初始化硬件加速(也可以叫硬解码/如果当前格式不支持硬解则立即切换到软解码)
         if (hardware != "none" && !FFmpegThreadHelper::initHardware(this, videoCodec, videoCodecCtx, hardware)) {
             logHardwareFallback("初始化硬解失败", hardware, "none");

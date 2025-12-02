@@ -395,12 +395,6 @@ public slots:
 
 signals:
 
-    //旧的指针版本信号保留
-    void receiveFrame(int width, int height, quint8 *dataY, quint8 *dataU, quint8 *dataV,
-                      quint32 linesizeY, quint32 linesizeU, quint32 linesizeV);
-
-    void receiveFrame(int width, int height, quint8 *dataY, quint8 *dataUV, quint32 linesizeY, quint32 linesizeUV);
-
     //新增：基于 YuvFrameData 的安全信号
     void receiveYuvFrame(const YuvFrameData &frame);
 
