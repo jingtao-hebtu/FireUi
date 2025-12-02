@@ -4,6 +4,7 @@
 #include "bannerwidget.h"
 #include "widgethelper.h"
 #include "urlhelper.h"
+#include "ffmpegthread.h"
 #include "Detector/DetectionQueueManager.h"
 #include "Detector/DetectorWorkerManager.h"
 
@@ -607,6 +608,9 @@ void VideoWidget::connectThreadSignal() {
             Qt::UniqueConnection);
     connect(videoThread, SIGNAL(snapImage(QImage, QString)), this, SLOT(snapImage(QImage, QString)),
             Qt::UniqueConnection);
+    if (auto ffmpegThread = qobject_cast<FFmpegThread *>(videoThread)) {
+        connect(ffmpegThread, &FFmpegThread::receiveYuvFrame, this, &VideoWidget::receiveYuvFrame, Qt::UniqueConnection);
+    }
     connect(videoThread, SIGNAL(receiveFrame(int, int, quint8 * , int)), this,
             SLOT(receiveFrame(int, int, quint8 * , int)), Qt::UniqueConnection);
     connect(videoThread, SIGNAL(receiveFrame(int, int, quint8 * , quint8 * , quint8 * , quint32, quint32, quint32)),
@@ -646,6 +650,9 @@ void VideoWidget::disconnectThreadSignal() {
 
     disconnect(videoThread, SIGNAL(receiveImage(QImage, int)), this, SLOT(receiveImage(QImage, int)));
     disconnect(videoThread, SIGNAL(snapImage(QImage, QString)), this, SLOT(snapImage(QImage, QString)));
+    if (auto ffmpegThread = qobject_cast<FFmpegThread *>(videoThread)) {
+        disconnect(ffmpegThread, &FFmpegThread::receiveYuvFrame, this, &VideoWidget::receiveYuvFrame);
+    }
     disconnect(videoThread, SIGNAL(receiveFrame(int, int, quint8 * , int)), this,
                SLOT(receiveFrame(int, int, quint8 * , int)));
     disconnect(videoThread, SIGNAL(receiveFrame(int, int, quint8 * , quint8 * , quint8 * , quint32, quint32, quint32)),
